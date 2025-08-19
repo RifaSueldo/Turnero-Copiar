@@ -36,31 +36,42 @@
 <button type="button" onclick="enviarHorarios()">Enviar horarios</button>
 
 <script>
-const URL_APPS_SCRIPT = "TU_URL_DE_APPS_SCRIPT"; // reemplaza con tu URL de web app
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzdWNbfrlQuC-2KILBP8bSolWutr3EGX9qDRXM6fuvnXl2Fs31yguJRuYj4NzFXKM9-yA/exec"; // reemplaza con tu URL de web app
 
 function agregarHorario() {
   const container = document.getElementById("horarios-container");
   const div = document.createElement("div");
   div.className = "horario";
-  div.innerHTML = `
-    <select class="dia">
-      <option>Lunes</option>
-      <option>Martes</option>
-      <option>Miércoles</option>
-      <option>Jueves</option>
-      <option>Viernes</option>
-      <option>Sábado</option>
-      <option>Domingo</option>
-    </select>
-    <input type="time" class="inicio">
-    <input type="time" class="fin">
-    <button type="button" onclick="quitarHorario(this)">Quitar</button>
-  `;
-  container.appendChild(div);
-}
 
-function quitarHorario(btn) {
-  btn.parentElement.remove();
+  // Creamos los elementos sin usar innerHTML para evitar errores de comillas
+  const select = document.createElement("select");
+  select.className = "dia";
+  ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].forEach(d=>{
+    const option = document.createElement("option");
+    option.value = d;
+    option.textContent = d;
+    select.appendChild(option);
+  });
+
+  const inputInicio = document.createElement("input");
+  inputInicio.type = "time";
+  inputInicio.className = "inicio";
+
+  const inputFin = document.createElement("input");
+  inputFin.type = "time";
+  inputFin.className = "fin";
+
+  const btnQuitar = document.createElement("button");
+  btnQuitar.type = "button";
+  btnQuitar.textContent = "Quitar";
+  btnQuitar.onclick = () => div.remove();
+
+  div.appendChild(select);
+  div.appendChild(inputInicio);
+  div.appendChild(inputFin);
+  div.appendChild(btnQuitar);
+
+  container.appendChild(div);
 }
 
 function enviarHorarios() {
@@ -82,18 +93,22 @@ function enviarHorarios() {
   formData.append("profesional", profesional);
   horarios.forEach(h => formData.append("horarios", h));
 
-  fetch(https://script.google.com/macros/s/AKfycbzdWNbfrlQuC-2KILBP8bSolWutr3EGX9qDRXM6fuvnXl2Fs31yguJRuYj4NzFXKM9-yA/exec, {
+  fetch(URL_APPS_SCRIPT, {
     method: "POST",
     body: formData
   })
   .then(res => res.json())
   .then(data => {
-    console.log(data);
     if(data.status==="ok") alert("Horarios enviados correctamente!");
     else alert("Error: "+data.message);
   })
   .catch(err => alert("Error al enviar: "+err));
 }
+
+function quitarHorario(btn) {
+  btn.parentElement.remove();
+}
 </script>
+
 </body>
 </html>
