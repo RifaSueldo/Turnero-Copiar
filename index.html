@@ -949,13 +949,14 @@ async function obtenerTurnosDisponibles(fecha){
     const fechaISO = fecha.toISOString().split('T')[0];
     const res = await fetch(`${urlScript}?accion=turnosDisponibles&fecha=${fechaISO}`);
     const data = await res.json();
-    // Renombrar 'turno' a 'hora' para compatibilidad con renderizarTurnos
+    console.log("Turnos recibidos del servidor:", data.turnos); // <-- esto
     return (data.turnos || []).map(t => ({...t, hora: t.turno}));
   }catch(e){
     console.error(e);
     return [];
   }
 }
+
 
 function seleccionarDia(año, mes, dia){
   diaSeleccionado = new Date(año, mes, dia);
