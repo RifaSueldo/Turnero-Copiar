@@ -827,9 +827,11 @@ section.visible {
 </div>
 
 <!-- Selección de profesional -->
-<div id="seleccionProfesional" style="display:none; text-align:center; margin:20px;">
-  <p>Seleccioná un profesional:</p>
-  <select id="profesionalSelect" onchange="seleccionarProfesional()"></select>
+<div style="text-align:center; margin:15px 0;">
+  <label for="profesionalSelect">Elegí un profesional:</label>
+  <select id="profesionalSelect" onchange="actualizarTurnos()">
+    <option value="">Cargando profesionales...</option>
+  </select>
 </div>
 
 <div class="turnos" id="turnos"></div>
@@ -864,7 +866,6 @@ section.visible {
   <p><strong>Email:</strong> <span id="tEmail"></span></p>
   <p><strong>Teléfono:</strong> <span id="tTelefono"></span></p>
   <p><strong>DNI:</strong> <span id="tDniMascota"></span></p>
-  <p><strong>Profesional:</strong> <span id="tProfesional"></span></p>
   <p><strong>Fecha:</strong> <span id="tFecha"></span></p>
   <p><strong>Turno:</strong> <span id="tTurno"></span></p>
   <p><strong>Comentario:</strong> <span id="tComentario"></span></p>
@@ -878,22 +879,21 @@ const mesActualElemento = document.getElementById("mesActual");
 const turnosElemento = document.getElementById("turnos");
 const formularioElemento = document.getElementById("formularioReserva");
 const profesionalSelect = document.getElementById("profesionalSelect");
-const seleccionProfesionalDiv = document.getElementById("seleccionProfesional");
-const urlScript = "https://script.google.com/macros/s/AKfycbxZsd0mTHIWGC4BEb2Uc4MJKCjr3ukMFco7A40VYxBfb1fM8WvdDNmQchlfO9-VndDNpw/exec"; // Cambiar por tu script
+const urlScript = "https://script.google.com/macros/s/AKfycbyxvO6xedTFcBfhw3sjlbaaRkzuFERY43DJmrqpiAE5f-r9wUMGP0DLfquQNo-wV61_VQ/exec"; // Cambiar por tu script
 
 let fecha = new Date();
 let diaSeleccionado = null;
 let turnoSeleccionado = null;
-let profesionalSeleccionado = null;
 let turnosOcupados = [];
 let turnosDisponibles = [];
+let profesionales = [];
 
-// Funciones de calendario (igual que antes)
+// Formato de fechas
 function formatFechaDDMMYYYY(f){ return `${String(f.getDate()).padStart(2,'0')}/${String(f.getMonth()+1).padStart(2,'0')}/${f.getFullYear()}`; }
 function isoAFechaDDMMYYYY(iso){ const d = new Date(iso); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
 function isoATurnoHHmm(iso){ const d = new Date(iso); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
-// Render calendario
+// ===== Calendario =====
 function renderizarCalendario(){
   diasElemento.innerHTML = "";
   const año = fecha.getFullYear(), mes = fecha.getMonth();
@@ -914,67 +914,94 @@ function renderizarCalendario(){
 }
 function cambiarMes(dir){ fecha.setMonth(fecha.getMonth()+dir); renderizarCalendario(); }
 
-// Selección profesional
-function cargarProfesionales(){
-  // Aquí podés obtener dinámicamente desde hoja Horarios si querés
-  const profesionales = ["Dr. Juan", "Dra. Ana", "Dr. Pedro"];
-  profesionalSelect.innerHTML = '<option value="">Seleccioná profesional</option>';
-  profesionales.forEach(p=>{ profesionalSelect.innerHTML += `<option value="${p}">${p}</option>`; });
-}
-function seleccionarProfesional(){ profesionalSeleccionado = profesionalSelect.value; if(diaSeleccionado) mostrarTurnos(); }
-
-// Obtener turnos disponibles
-async function obtenerTurnosDisponibles(fecha){
-  if(!profesionalSeleccionado) return [];
+// ===== Profesionales =====
+async function cargarProfesionales(){
   try{
-    const fechaISO=fecha.toISOString().split('T')[0];
-    const res=await fetch(`${urlScript}?fecha=${fechaISO}&profesional=${encodeURIComponent(profesionalSeleccionado)}`);
-    const data=await res.json();
-    return data.turnos||[];
-  }catch(e){ console.error(e); return []; }
+    const res = await fetch(`${urlScript}?accion=profesionales`);
+    const data = await res.json();
+    profesionales = data.profesionales || [];
+    profesionalSelect.innerHTML = profesionales.length
+      ? profesionales.map(p=>`<option value="${p}">${p}</option>`).join("")
+      : `<option value="">No hay profesionales</option>`;
+  } catch(e){
+    profesionalSelect.innerHTML = `<option value="">Error al cargar profesionales</option>`;
+    console.error(e);
+  }
 }
 
-// Selección día
+function actualizarTurnos(){
+  if(diaSeleccionado) renderizarTurnos();
+}
+
+// ===== Turnos =====
+async function fetchTurnosOcupados(){
+  try{
+    const res = await fetch(urlScript);
+    const data = await res.json();
+    turnosOcupados = (data.turnosOcupados||[]).map(t=>({fecha:isoAFechaDDMMYYYY(t.fecha), turno:isoATurnoHHmm(t.turno), profesional:t.profesional}));
+  }catch{
+    turnosOcupados = [];
+  }
+}
+
+async function obtenerTurnosDisponibles(fecha){
+  try{
+    const fechaISO = fecha.toISOString().split('T')[0];
+    const res = await fetch(`${urlScript}?fecha=${fechaISO}`);
+    const data = await res.json();
+    return data.turnos || [];
+  }catch(e){
+    console.error(e);
+    return [];
+  }
+}
+
 function seleccionarDia(año,mes,dia){
-  diaSeleccionado=new Date(año,mes,dia);
-  turnoSeleccionado=null;
-  turnosElemento.innerHTML=`<h3>Turnos para ${formatFechaDDMMYYYY(diaSeleccionado)}</h3>
-  <p id="mensajeTurnos" style="font-style:italic;color:#555;margin-top:10px;">Buscando turnos...</p>
-  <div id="contenedorTurnos" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div>`;
+  diaSeleccionado = new Date(año,mes,dia);
+  turnoSeleccionado = null;
+  turnosElemento.innerHTML = `<h3>Turnos para ${formatFechaDDMMYYYY(diaSeleccionado)}</h3>
+    <p id="mensajeTurnos" style="font-style:italic;color:#555;margin-top:10px;">Buscando turnos...</p>
+    <div id="contenedorTurnos" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div>`;
   formularioElemento.style.display="none";
   document.getElementById("ticket").style.display="none";
-  seleccionProfesionalDiv.style.display="block";
-  cargarProfesionales();
+  fetchTurnosOcupados().then(async ()=>{
+    turnosDisponibles = await obtenerTurnosDisponibles(diaSeleccionado);
+    renderizarTurnos();
+  }).catch(()=>document.getElementById("mensajeTurnos").textContent="Error al cargar turnos.");
 }
 
-// Mostrar turnos
-async function mostrarTurnos(){
-  const contenedorTurnos=document.getElementById("contenedorTurnos");
-  const mensaje=document.getElementById("mensajeTurnos");
+function renderizarTurnos(){
+  const fechaTexto = formatFechaDDMMYYYY(diaSeleccionado);
+  const mensaje = document.getElementById("mensajeTurnos");
+  const contenedorTurnos = document.getElementById("contenedorTurnos");
   if(mensaje) mensaje.textContent="Cargando turnos disponibles...";
   if(contenedorTurnos) contenedorTurnos.innerHTML="";
-  turnosDisponibles = await obtenerTurnosDisponibles(diaSeleccionado);
+
+  const profesionalSeleccionado = profesionalSelect.value;
+
   let count = 0;
-  const fechaTexto=formatFechaDDMMYYYY(diaSeleccionado);
   turnosDisponibles.forEach(turno=>{
-    count++;
-    const btn=document.createElement("button");
-    btn.textContent=`Reservar ${turno}`;
-    btn.classList.add("turno-button");
-    btn.onclick=()=>mostrarFormulario(turno);
-    contenedorTurnos.appendChild(btn);
+    const ocupado = turnosOcupados.some(t=>t.fecha===fechaTexto && t.turno===turno.hora && t.profesional===profesionalSeleccionado);
+    const turnoParaProfesional = turno.profesional === profesionalSeleccionado;
+    if(!ocupado && turnoParaProfesional){
+      count++;
+      const btn = document.createElement("button");
+      btn.textContent = `Reservar ${turno.hora}`;
+      btn.classList.add("turno-button");
+      btn.onclick = ()=>mostrarFormulario(turno.hora);
+      contenedorTurnos.appendChild(btn);
+    }
   });
+
   if(count===0) contenedorTurnos.innerHTML="<p><em>No hay turnos disponibles.</em></p>";
   if(mensaje) mensaje.textContent="";
+  turnosElemento.scrollIntoView({behavior:"smooth"});
 }
 
-// Formulario
+// ===== Formulario, enviar reserva y ticket =====
 function mostrarFormulario(turno){ turnoSeleccionado=turno; formularioElemento.style.display="none"; document.getElementById("dniStep").style.display="block"; document.getElementById("dniStep").scrollIntoView({behavior:"smooth"});}
 function mostrarFormularioNuevo(){ document.getElementById("dniStep").style.display="none"; formularioElemento.style.display="block"; formularioElemento.scrollIntoView({behavior:"smooth"});}
-
-// Enviar reserva
 function enviarReserva(){
-  if(!profesionalSeleccionado){ alert("Seleccioná un profesional"); return; }
   const data={
     nombre:document.getElementById("nombre").value,
     nombreMascota:document.getElementById("nombreMascota").value,
@@ -985,16 +1012,14 @@ function enviarReserva(){
     comentario:document.getElementById("comentario").value,
     fecha:formatFechaDDMMYYYY(diaSeleccionado),
     turno:turnoSeleccionado,
-    profesional: profesionalSeleccionado
+    profesional:profesionalSelect.value
   };
   fetch(urlScript,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({accion:"nuevaReserva", datos:data})
+    body:JSON.stringify(data)
   }).then(()=>mostrarTicket(data)).catch(e=>alert("Error al enviar: "+e));
 }
-
-// Mostrar ticket
 function mostrarTicket(data){
   document.getElementById("tNombre").textContent=data.nombre;
   document.getElementById("tNombreMascota").textContent=data.nombreMascota;
@@ -1002,27 +1027,16 @@ function mostrarTicket(data){
   document.getElementById("tEmail").textContent=data.email;
   document.getElementById("tTelefono").textContent=data.telefono;
   document.getElementById("tDniMascota").textContent=data.dniMascota;
-  document.getElementById("tProfesional").textContent=data.profesional;
   document.getElementById("tFecha").textContent=data.fecha;
   document.getElementById("tTurno").textContent=data.turno;
-  document.getElementById("tComentario").textContent=data.comentario;
   formularioElemento.style.display="none";
   document.getElementById("dniStep").style.display="none";
   document.getElementById("ticket").style.display="block";
   document.getElementById("ticket").scrollIntoView({behavior:"smooth"});
 }
+function descargarTicket(){ html2canvas(document.getElementById("ticket")).then(canvas=>{ const link=document.createElement("a"); link.href=canvas.toDataURL("image/png"); link.download="TurnoX.png"; link.click(); }); }
 
-// Descargar ticket
-function descargarTicket(){
-  html2canvas(document.getElementById("ticket")).then(canvas=>{
-    const link=document.createElement("a");
-    link.href=canvas.toDataURL("image/png");
-    link.download="TurnoX.png";
-    link.click();
-  });
-}
-
-// Verificar DNI
+// ===== DNI =====
 function verificarDni(){
   const dni=document.getElementById("dniIngreso").value.trim();
   if(!dni){ document.getElementById("dniError").style.display="block"; return;}
@@ -1038,12 +1052,15 @@ function verificarDni(){
   }).catch(()=>document.getElementById("dniError").style.display="block");
 }
 
-document.addEventListener("DOMContentLoaded",()=>{ 
+document.addEventListener("DOMContentLoaded",()=>{
   renderizarCalendario(); 
+  cargarProfesionales();
   const hoy=new Date(); 
   seleccionarDia(hoy.getFullYear(),hoy.getMonth(),hoy.getDate());
 });
 </script>
+</body>
+</html>
 </body>
 
 
