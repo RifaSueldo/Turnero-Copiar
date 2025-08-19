@@ -981,18 +981,18 @@ function renderizarTurnos(){
   const profesionalSeleccionado = profesionalSelect.value;
 
   let count = 0;
-  turnosDisponibles.forEach(turno=>{
-    const ocupado = turnosOcupados.some(t=>t.fecha===fechaTexto && t.turno===turno.hora && t.profesional===profesionalSeleccionado);
-    const turnoParaProfesional = turno.profesional === profesionalSeleccionado;
-    if(!ocupado && turnoParaProfesional){
-      count++;
-      const btn = document.createElement("button");
-      btn.textContent = `Reservar ${turno.hora}`;
-      btn.classList.add("turno-button");
-      btn.onclick = ()=>mostrarFormulario(turno.hora);
-      contenedorTurnos.appendChild(btn);
+ turnosDisponibles.forEach(turno => {
+    const ocupado = turnosOcupados.some(t => t.fecha === fechaTexto && t.turno === turno.hora);
+    if (!ocupado) {
+        count++;
+        const btn = document.createElement("button");
+        btn.textContent = `Reservar ${turno.hora}`;
+        btn.classList.add("turno-button");
+        btn.onclick = () => mostrarFormulario(turno.hora);
+        contenedorTurnos.appendChild(btn);
     }
-  });
+});
+
 
   if(count===0) contenedorTurnos.innerHTML="<p><em>No hay turnos disponibles.</em></p>";
   if(mensaje) mensaje.textContent="";
