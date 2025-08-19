@@ -1,104 +1,99 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Agregar Horarios</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    input, select, button { margin: 5px 0; padding: 5px; }
-    .horario { margin-bottom: 10px; }
-  </style>
+<meta charset="UTF-8">
+<title>Agregar Horarios</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  input, select, button { margin: 5px 0; padding: 5px; }
+  .horario { margin-bottom: 10px; }
+</style>
 </head>
 <body>
-  <h1>Agregar Horarios de Profesionales</h1>
+<h1>Agregar Horarios de Profesionales</h1>
 
-  <label>Profesional:</label>
-  <input type="text" id="profesional" placeholder="Ej: Juan"><br>
+<label>Profesional:</label>
+<input type="text" id="profesional" placeholder="Ej: Juan"><br>
 
-  <div id="horarios-container">
-    <div class="horario">
-      <select class="dia">
-        <option>Lunes</option>
-        <option>Martes</option>
-        <option>Miércoles</option>
-        <option>Jueves</option>
-        <option>Viernes</option>
-        <option>Sábado</option>
-        <option>Domingo</option>
-      </select>
-      <input type="time" class="inicio">
-      <input type="time" class="fin">
-      <button type="button" onclick="quitarHorario(this)">Quitar</button>
-    </div>
+<div id="horarios-container">
+  <div class="horario">
+    <select class="dia">
+      <option>Lunes</option>
+      <option>Martes</option>
+      <option>Miércoles</option>
+      <option>Jueves</option>
+      <option>Viernes</option>
+      <option>Sábado</option>
+      <option>Domingo</option>
+    </select>
+    <input type="time" class="inicio">
+    <input type="time" class="fin">
+    <button type="button" onclick="quitarHorario(this)">Quitar</button>
   </div>
+</div>
 
-  <button type="button" onclick="agregarHorario()">Agregar otro horario</button><br>
-  <button type="button" onclick="enviarHorarios()">Enviar horarios</button>
+<button type="button" onclick="agregarHorario()">Agregar otro horario</button><br>
+<button type="button" onclick="enviarHorarios()">Enviar horarios</button>
 
-  <script>
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwsls7KzNvoZopHzOtGPB_3xMDnfknuXy6kWHkvmCIBypWrPJ9plbaJyuGpiOH5cbtO0A/exec"; // reemplaza con tu URL de web app
+<script>
+const URL_APPS_SCRIPT = "TU_URL_DE_APPS_SCRIPT"; // reemplaza con tu URL de web app
 
-    function agregarHorario() {
-      const container = document.getElementById("horarios-container");
-      const div = document.createElement("div");
-      div.className = "horario";
-      div.innerHTML = `
-        <select class="dia">
-          <option>Lunes</option>
-          <option>Martes</option>
-          <option>Miércoles</option>
-          <option>Jueves</option>
-          <option>Viernes</option>
-          <option>Sábado</option>
-          <option>Domingo</option>
-        </select>
-        <input type="time" class="inicio">
-        <input type="time" class="fin">
-        <button type="button" onclick="quitarHorario(this)">Quitar</button>
-      `;
-      container.appendChild(div);
-    }
+function agregarHorario() {
+  const container = document.getElementById("horarios-container");
+  const div = document.createElement("div");
+  div.className = "horario";
+  div.innerHTML = `
+    <select class="dia">
+      <option>Lunes</option>
+      <option>Martes</option>
+      <option>Miércoles</option>
+      <option>Jueves</option>
+      <option>Viernes</option>
+      <option>Sábado</option>
+      <option>Domingo</option>
+    </select>
+    <input type="time" class="inicio">
+    <input type="time" class="fin">
+    <button type="button" onclick="quitarHorario(this)">Quitar</button>
+  `;
+  container.appendChild(div);
+}
 
-    function quitarHorario(btn) {
-      btn.parentElement.remove();
-    }
+function quitarHorario(btn) {
+  btn.parentElement.remove();
+}
 
-    function enviarHorarios() {
-      const profesional = document.getElementById("profesional").value.trim();
-      if (!profesional) {
-        alert("Ingresa el nombre del profesional");
-        return;
-      }
+function enviarHorarios() {
+  const profesional = document.getElementById("profesional").value.trim();
+  if(!profesional) return alert("Ingresa el nombre del profesional");
 
-      const horariosDivs = document.querySelectorAll("#horarios-container .horario");
-      const horarios = [];
-      horariosDivs.forEach(div => {
-        const dia = div.querySelector(".dia").value;
-        const inicio = div.querySelector(".inicio").value;
-        const fin = div.querySelector(".fin").value;
-        if (inicio && fin) {
-          horarios.push({ dia, inicio, fin });
-        }
-      });
+  const horariosDivs = document.querySelectorAll("#horarios-container .horario");
+  const horarios = [];
+  horariosDivs.forEach(div => {
+    const dia = div.querySelector(".dia").value;
+    const inicio = div.querySelector(".inicio").value;
+    const fin = div.querySelector(".fin").value;
+    if(inicio && fin) horarios.push(`${dia},${inicio},${fin}`);
+  });
 
-      if (horarios.length === 0) {
-        alert("Agrega al menos un horario");
-        return;
-      }
+  if(horarios.length===0) return alert("Agrega al menos un horario");
 
-      fetch(URL_APPS_SCRIPT, {
-        method: "POST",
-        body: JSON.stringify({ profesional, horarios }),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        if(data.status === "ok") alert("Horarios enviados correctamente!");
-        else alert("Error: " + data.message);
-      })
-      .catch(err => alert("Error al enviar: " + err));
-    }
-  </script>
+  const formData = new URLSearchParams();
+  formData.append("profesional", profesional);
+  horarios.forEach(h => formData.append("horarios", h));
+
+  fetch(https://script.google.com/macros/s/AKfycbzdWNbfrlQuC-2KILBP8bSolWutr3EGX9qDRXM6fuvnXl2Fs31yguJRuYj4NzFXKM9-yA/exec, {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    if(data.status==="ok") alert("Horarios enviados correctamente!");
+    else alert("Error: "+data.message);
+  })
+  .catch(err => alert("Error al enviar: "+err));
+}
+</script>
 </body>
 </html>
