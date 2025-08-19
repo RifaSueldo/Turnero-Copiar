@@ -826,6 +826,12 @@ section.visible {
   <div class="dias" id="dias"></div>
 </div>
 
+<!-- Selección de profesional -->
+<div id="seleccionProfesional" style="display:none; text-align:center; margin:20px;">
+  <p>Seleccioná un profesional:</p>
+  <select id="profesionalSelect" onchange="seleccionarProfesional()"></select>
+</div>
+
 <div class="turnos" id="turnos"></div>
 
 <div id="dniStep" style="display:none; text-align:center; margin:20px;">
@@ -858,6 +864,7 @@ section.visible {
   <p><strong>Email:</strong> <span id="tEmail"></span></p>
   <p><strong>Teléfono:</strong> <span id="tTelefono"></span></p>
   <p><strong>DNI:</strong> <span id="tDniMascota"></span></p>
+  <p><strong>Profesional:</strong> <span id="tProfesional"></span></p>
   <p><strong>Fecha:</strong> <span id="tFecha"></span></p>
   <p><strong>Turno:</strong> <span id="tTurno"></span></p>
   <p><strong>Comentario:</strong> <span id="tComentario"></span></p>
@@ -870,19 +877,23 @@ const diasElemento = document.getElementById("dias");
 const mesActualElemento = document.getElementById("mesActual");
 const turnosElemento = document.getElementById("turnos");
 const formularioElemento = document.getElementById("formularioReserva");
-const urlScript = "TU_GOOGLE_APPS_SCRIPT_URL_AQUI"; // Cambiar por tu script
+const profesionalSelect = document.getElementById("profesionalSelect");
+const seleccionProfesionalDiv = document.getElementById("seleccionProfesional");
+const urlScript = "https://script.google.com/macros/s/AKfycbxZsd0mTHIWGC4BEb2Uc4MJKCjr3ukMFco7A40VYxBfb1fM8WvdDNmQchlfO9-VndDNpw/exec"; // Cambiar por tu script
+
 let fecha = new Date();
 let diaSeleccionado = null;
 let turnoSeleccionado = null;
+let profesionalSeleccionado = null;
 let turnosOcupados = [];
 let turnosDisponibles = [];
 
-// Formato de fechas
+// Funciones de calendario (igual que antes)
 function formatFechaDDMMYYYY(f){ return `${String(f.getDate()).padStart(2,'0')}/${String(f.getMonth()+1).padStart(2,'0')}/${f.getFullYear()}`; }
 function isoAFechaDDMMYYYY(iso){ const d = new Date(iso); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
 function isoATurnoHHmm(iso){ const d = new Date(iso); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
-// Calendario
+// Render calendario
 function renderizarCalendario(){
   diasElemento.innerHTML = "";
   const año = fecha.getFullYear(), mes = fecha.getMonth();
@@ -903,17 +914,27 @@ function renderizarCalendario(){
 }
 function cambiarMes(dir){ fecha.setMonth(fecha.getMonth()+dir); renderizarCalendario(); }
 
-// Fetch turnos ocupados y disponibles
-async function fetchTurnosOcupados(){
-  try{ const res = await fetch(urlScript); const data = await res.json();
-    turnosOcupados=(data.turnosOcupados||[]).map(t=>({fecha:isoAFechaDDMMYYYY(t.fecha), turno:isoATurnoHHmm(t.turno)}));
-  }catch{ turnosOcupados=[]; }
+// Selección profesional
+function cargarProfesionales(){
+  // Aquí podés obtener dinámicamente desde hoja Horarios si querés
+  const profesionales = ["Dr. Juan", "Dra. Ana", "Dr. Pedro"];
+  profesionalSelect.innerHTML = '<option value="">Seleccioná profesional</option>';
+  profesionales.forEach(p=>{ profesionalSelect.innerHTML += `<option value="${p}">${p}</option>`; });
 }
+function seleccionarProfesional(){ profesionalSeleccionado = profesionalSelect.value; if(diaSeleccionado) mostrarTurnos(); }
+
+// Obtener turnos disponibles
 async function obtenerTurnosDisponibles(fecha){
-  try{ const fechaISO=fecha.toISOString().split('T')[0]; const res=await fetch(`${urlScript}?fecha=${fechaISO}`); const data=await res.json(); return data.turnos||[]; }catch(e){ console.error(e); return []; }
+  if(!profesionalSeleccionado) return [];
+  try{
+    const fechaISO=fecha.toISOString().split('T')[0];
+    const res=await fetch(`${urlScript}?fecha=${fechaISO}&profesional=${encodeURIComponent(profesionalSeleccionado)}`);
+    const data=await res.json();
+    return data.turnos||[];
+  }catch(e){ console.error(e); return []; }
 }
 
-// Selección de día y turnos
+// Selección día
 function seleccionarDia(año,mes,dia){
   diaSeleccionado=new Date(año,mes,dia);
   turnoSeleccionado=null;
@@ -922,34 +943,29 @@ function seleccionarDia(año,mes,dia){
   <div id="contenedorTurnos" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div>`;
   formularioElemento.style.display="none";
   document.getElementById("ticket").style.display="none";
-  fetchTurnosOcupados().then(async()=>{
-    turnosDisponibles=await obtenerTurnosDisponibles(diaSeleccionado);
-    renderizarTurnos();
-  }).catch(()=>document.getElementById("mensajeTurnos").textContent="Error al cargar turnos.");
+  seleccionProfesionalDiv.style.display="block";
+  cargarProfesionales();
 }
-function renderizarTurnos(){
-  const fechaTexto=formatFechaDDMMYYYY(diaSeleccionado);
-  const mensaje=document.getElementById("mensajeTurnos");
+
+// Mostrar turnos
+async function mostrarTurnos(){
   const contenedorTurnos=document.getElementById("contenedorTurnos");
+  const mensaje=document.getElementById("mensajeTurnos");
   if(mensaje) mensaje.textContent="Cargando turnos disponibles...";
   if(contenedorTurnos) contenedorTurnos.innerHTML="";
-  setTimeout(()=>{
-    let count=0;
-    turnosDisponibles.forEach(turno=>{
-      const ocupado=turnosOcupados.some(t=>t.fecha===fechaTexto && t.turno===turno);
-      if(!ocupado){
-        count++;
-        const btn=document.createElement("button");
-        btn.textContent=`Reservar ${turno}`;
-        btn.classList.add("turno-button");
-        btn.onclick=()=>mostrarFormulario(turno);
-        contenedorTurnos.appendChild(btn);
-      }
-    });
-    if(count===0) contenedorTurnos.innerHTML="<p><em>No hay turnos disponibles.</em></p>";
-    if(mensaje) mensaje.textContent="";
-    turnosElemento.scrollIntoView({behavior:"smooth"});
-  },600);
+  turnosDisponibles = await obtenerTurnosDisponibles(diaSeleccionado);
+  let count = 0;
+  const fechaTexto=formatFechaDDMMYYYY(diaSeleccionado);
+  turnosDisponibles.forEach(turno=>{
+    count++;
+    const btn=document.createElement("button");
+    btn.textContent=`Reservar ${turno}`;
+    btn.classList.add("turno-button");
+    btn.onclick=()=>mostrarFormulario(turno);
+    contenedorTurnos.appendChild(btn);
+  });
+  if(count===0) contenedorTurnos.innerHTML="<p><em>No hay turnos disponibles.</em></p>";
+  if(mensaje) mensaje.textContent="";
 }
 
 // Formulario
@@ -958,6 +974,7 @@ function mostrarFormularioNuevo(){ document.getElementById("dniStep").style.disp
 
 // Enviar reserva
 function enviarReserva(){
+  if(!profesionalSeleccionado){ alert("Seleccioná un profesional"); return; }
   const data={
     nombre:document.getElementById("nombre").value,
     nombreMascota:document.getElementById("nombreMascota").value,
@@ -967,12 +984,13 @@ function enviarReserva(){
     dniMascota:document.getElementById("dniMascota").value,
     comentario:document.getElementById("comentario").value,
     fecha:formatFechaDDMMYYYY(diaSeleccionado),
-    turno:turnoSeleccionado
+    turno:turnoSeleccionado,
+    profesional: profesionalSeleccionado
   };
   fetch(urlScript,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(data)
+    body:JSON.stringify({accion:"nuevaReserva", datos:data})
   }).then(()=>mostrarTicket(data)).catch(e=>alert("Error al enviar: "+e));
 }
 
@@ -984,6 +1002,7 @@ function mostrarTicket(data){
   document.getElementById("tEmail").textContent=data.email;
   document.getElementById("tTelefono").textContent=data.telefono;
   document.getElementById("tDniMascota").textContent=data.dniMascota;
+  document.getElementById("tProfesional").textContent=data.profesional;
   document.getElementById("tFecha").textContent=data.fecha;
   document.getElementById("tTurno").textContent=data.turno;
   document.getElementById("tComentario").textContent=data.comentario;
@@ -1019,8 +1038,13 @@ function verificarDni(){
   }).catch(()=>document.getElementById("dniError").style.display="block");
 }
 
-document.addEventListener("DOMContentLoaded",()=>{ renderizarCalendario(); const hoy=new Date(); seleccionarDia(hoy.getFullYear(),hoy.getMonth(),hoy.getDate());});
+document.addEventListener("DOMContentLoaded",()=>{ 
+  renderizarCalendario(); 
+  const hoy=new Date(); 
+  seleccionarDia(hoy.getFullYear(),hoy.getMonth(),hoy.getDate());
+});
 </script>
 </body>
+
 
 </html>
