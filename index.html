@@ -947,9 +947,10 @@ async function fetchTurnosOcupados(){
 async function obtenerTurnosDisponibles(fecha){
   try{
     const fechaISO = fecha.toISOString().split('T')[0];
-    const res = await fetch(`${urlScript}?fecha=${fechaISO}`);
+    const res = await fetch(`${urlScript}?accion=turnosDisponibles&fecha=${fechaISO}`);
     const data = await res.json();
-    return data.turnos || [];
+    // Renombrar 'turno' a 'hora' para mantener compatibilidad con renderizarTurnos
+    return (data.turnos || []).map(t => ({...t, hora: t.turno}));
   }catch(e){
     console.error(e);
     return [];
