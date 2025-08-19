@@ -184,67 +184,7 @@ html {
       background: #6B6870;
     }
 
-    /* ======== RESULTADOS (FICHA MÉDICA)
-    /* Centrar resultados y reducir espacio 
-    .resultado {
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      background-color: white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      text-align: left;
-    }
-
-    .resultado.alternado {
-      background-color: #f0f0f0;
-    }
-
-    .resultado label {
-      font-size: 14px;
-      margin-bottom: 1px;
-      display: block;
-      font-weight: bold;
-    }
-
-    .resultado input,
-    .resultado textarea,
-    .resultado select {
-      font-size: 14px;
-      padding: 6px;
-      margin-bottom: 6px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .resultado textarea {
-      min-height: 40px;
-    }
-
-    .resultado .acciones {
-      margin-top: 6px;
-    }
-
-    .resultado button {
-      padding: 6px 10px;
-      font-size: 14px;
-    }*/
-
-    /* Extra campos dinámicos */
-    .campo-extra {
-      margin-bottom: 10px;
-      position: relative;
-    }
-    .campo-extra button {
-      position: absolute;
-      top: 30px;
-      right: 0;
-      background: #e74c3c;
-      padding: 2px 8px;
-      font-size: 14px;
-      border-radius: 4px;
-      margin-left: 5px;
-    }
-
+    
     /* ======== OTROS ======== */
     #cargando {
       display: none;
@@ -266,29 +206,8 @@ html {
       }
     }
 
-    /* Modal nuevo campo */
-    #modalCampo {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background:#fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 2000;
-      width: 300px;
-    }
-    #modalCampo label {
-      font-weight: bold;
-      margin-top: 10px;
-      display: block;
-    }
-    #modalCampo input[type=text], #modalCampo select {
-      margin-top: 5px;
-    }
-
+  
+    
     /* NUEVO: Contenedor para búsqueda por fecha */
     #busquedaFecha {
      display: flex;
@@ -847,7 +766,7 @@ input[type="date"]:focus {
    <img src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" />
   </div>
  <div class="navbar-action">
-    <button class="btn-redireccion" onclick="window.location.href='https://turnox.pro/'">
+    <button class="btn-redireccion" onclick="window.location.href='https://turnero-copiar.netlify.app/'">
       TURNERO
     </button>
   </div>
@@ -915,10 +834,9 @@ input[type="date"]:focus {
 <div id="appDiv" style="text-align: center; display:none;">
   <!-- APP PRINCIPAL -->
 <div id="mensajeBienvenida" class="mensaje-bienvenida" style="display:none;"></div>
-  <div class="container">
+ 
+   <div class="container">
 <div class="creditos-container">
-  
-
   <!-- Botón con SVG -->
   <button id="creditosBtn" class="creditos-btn" title="Ver créditos">
     <!-- SVG aquí -->
@@ -940,12 +858,9 @@ input[type="date"]:focus {
      <p style="font-size: 12px; text-align: center; margin: 2px 0;">1 crédito = 1 Turno</p>
 <p style="font-size: 14px; text-align: center; margin: 2px 0;">1 a 100 $170</p>
 <p style="font-size: 14px; text-align: center; margin: 2px 0;">101 a 300 $165</p>
-
-
 <button id="agregarCreditosBtn">Agregar créditos</button>
      <p style="font-size: 14px; text-align: center; margin: 2px 0;">Plan INFINITO disponible</p>
-     
-  </div>
+    </div>
 </div>
    <!-- BUSQUEDA GENERAL 
 <div class="busqueda-container">   
@@ -1007,33 +922,6 @@ input[type="date"]:focus {
 
 
    
-<!-- MODAL NUEVO CAMPO -->
-<div id="modalCampo">
-  <h4>Agregar nuevo campo</h4>
-  
-  <label for="tipoCampo">Tipo de campo:</label>
-  <select id="tipoCampo">
-    <option value="texto">Texto corto</option>
-    <option value="textarea">Texto largo</option>
-    <option value="fecha">Fecha (dd/mm/aaaa)</option>
-    <option value="opciones">Múltiples opciones</option>
-  </select>
-
-  <div id="opcionesExtra" style="display:none; margin-top:8px;">
-    <label for="listaOpciones">Opciones (separadas por coma):</label>
-    <input type="text" id="listaOpciones" placeholder="Ej: Vacuna, Desparasitante, Otro" />
-  </div>
-
-  <label for="nombreCampo">Nombre del campo:</label>
-  <input type="text" id="nombreCampo" placeholder="Ej: Vacuna aplicada" />
-
-  <div style="margin-top:10px; text-align:right;">
-    <button onclick="confirmarNuevoCampo()">Agregar</button>
-    <button onclick="cerrarModalCampo()" style="background:#EDEDED;">Cancelar</button>
-  </div>
-</div>
-
-  
 
 
 <script>
@@ -1138,8 +1026,7 @@ window.onload = () => {
 };
 
  
-function fechaVacunaToString(fechaStr) {
-  // Formatear fecha para mostrar en lista (DD/MM/YYYY)
+
   function parseFechaDDMMYYYY(str) {
     if (!str) return null;
     const partes = str.split("/");
@@ -1248,152 +1135,23 @@ function fechaVacunaToString(fechaStr) {
           <label>Veterinario que lo atiende:</label>
           <textarea id="historial-${index}" disabled>${r.veterinario || ''}</textarea>
           
-          <label>Próxima vacuna:</label>
-<input type="text" id="proximaVacuna-${index}" 
-  value="${r.proxima_vacuna ? new Date(r.proxima_vacuna).toLocaleDateString('es-AR') : ''}" 
-  disabled>
-
-
-          <div id="extraCampos-${index}"></div>
-
-          <button type="button" onclick="agregarBloqueCampos(${index})" style="margin-top: 5px;">
-            <i class="fas fa-plus"></i> Agregar Datos Médicos
-          </button>
-
-          <button id="btnEditar-${index}" onclick="habilitarEdicion(${index})" style="margin-top: 10px;">
-            <i class="fas fa-edit"></i> Editar
-          </button>
-        </div>
+          
       `;
     }
   });
 
   resultadoDiv.innerHTML = html;
 
-  // Renderizar los bloques extras solo en búsqueda detallada
-  if (!esBusquedaGeneral) {
-    lista.forEach((r, index) => {
-      renderizarBloquesExtras(index, r.extras);
-    });
-  }
-}
+ 
 
 
-  // HABILITAR EDICIÓN
-  function habilitarEdicion(index) {
-  // Campos fijos
-  const campos = [
-    `nombre-${index}`, `mascota-${index}`, `tipo-${index}`, `email-${index}`, `tel-${index}`,
-    `fehcaDeNac-${index}`, `peso-${index}`, `historial-${index}`, `proximaVacuna-${index}`
-  ];
-  campos.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = false;
-  });
- // Habilitar y convertir a <input type="date"> el campo Próxima vacuna
-  const proximaVacunaInput = document.getElementById(`proximaVacuna-${index}`);
-  if (proximaVacunaInput) {
-    let fechaISO = "";
-    if (proximaVacunaInput.value) {
-      const partes = proximaVacunaInput.value.split("/");
-      if (partes.length === 3) {
-        fechaISO = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
-      }
-    }
-    proximaVacunaInput.type = "date";
-    proximaVacunaInput.value = fechaISO;
-    proximaVacunaInput.disabled = false;
-  }
-    // ✅ Habilitar y convertir a <input type="date"> el campo Fecha de nacimiento
-  const fechaNacInput = document.getElementById(`fehcaDeNac-${index}`);
-  if (fechaNacInput) {
-    let fechaISO = "";
-    if (fechaNacInput.value) {
-      const partes = fechaNacInput.value.split("/"); // Formato dd/mm/yyyy
-      if (partes.length === 3) {
-        fechaISO = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
-      }
-    }
-    fechaNacInput.type = "date";
-    fechaNacInput.value = fechaISO;
-    fechaNacInput.disabled = false;
-  }
-  // Campos dinámicos dentro de los bloques
-  const contenedorExtras = document.getElementById(`extraCampos-${index}`);
-  if (contenedorExtras) {
-    // Habilitar todos los inputs, selects y textareas dentro de los bloques dinámicos
-    contenedorExtras.querySelectorAll('input, select, textarea').forEach(campo => {
-      campo.disabled = false;
-    });
-  }
 
-  // Cambiar el botón para que guarde los cambios
-  const btn = document.getElementById(`btnEditar-${index}`);
-  if (btn) {
-    btn.innerHTML = '<i class="fas fa-save"></i> Guardar';
-    btn.onclick = () => guardarCambios(index);
-  }
-}
+  
 
 
-  // GUARDAR CAMBIOS
- function guardarCambios(index) {
-  const datosActualizados = {
-    dniMascota: document.getElementById(`dni-${index}`).value.trim(),
-    nombre: document.getElementById(`nombre-${index}`).value.trim(),
-    nombreMascota: document.getElementById(`mascota-${index}`).value.trim(),
-    tipoMascota: document.getElementById(`tipo-${index}`).value.trim(),
-    email: document.getElementById(`email-${index}`).value.trim(),
-    telefono: document.getElementById(`tel-${index}`).value.trim(),
-    fehcaDeNac: document.getElementById(`fehcaDeNac-${index}`).value.trim(),
-    peso: document.getElementById(`peso-${index}`).value.trim(),
-    veterinario: document.getElementById(`historial-${index}`).value.trim(),
-    proxima_vacuna: document.getElementById(`proximaVacuna-${index}`).value.trim(),
-    extras: {}
-  };
+   
 
-  const contenedorExtras = document.getElementById(`extraCampos-${index}`);
-  if (contenedorExtras) {
-    const bloques = contenedorExtras.getElementsByClassName("bloque-campos");
-
-    for (let i = 0; i < bloques.length; i++) {
-      const bloque = bloques[i];
-
-      // Obtener valores de cada campo dentro del bloque
-      const fecha = bloque.querySelector('input[type="date"]')?.value || "";
-      const selectMotivo = bloque.querySelector('select[multiple]');
-      const motivos = selectMotivo
-        ? Array.from(selectMotivo.selectedOptions).map(opt => opt.value).join(", ")
-        : "";
-      const descripcion = bloque.querySelector('textarea')?.value || "";
-      const observaciones = bloque.querySelector('textarea')?.value || "";
-
-      // Guardar con claves ordenadas para backend
-      datosActualizados.extras[`Fecha_${i+1}`] = fecha;
-      datosActualizados.extras[`Motivo_${i+1}`] = motivos;
-      datosActualizados.extras[`Descripción_${i+1}`] = descripcion;
-      datosActualizados.extras[`Observaciones_${i+1}`] = observaciones;
-    }
-  }
-
-  fetch(urlScript, {
-    method: "POST",
-    body: new URLSearchParams({
-      accion: "editar",
-      datos: JSON.stringify(datosActualizados),
-    }),
-  })
-    .then(res => res.json())
-    .then(resp => {
-      if (resp.success) {
-        alert("Cambios guardados correctamente.");
-        buscarGeneral();
-      } else {
-        alert("Error: " + resp.error);
-      }
-    })
-    .catch(() => alert("Error de conexión al guardar los cambios."));
-}
+ 
 
 </script>
 
@@ -1538,175 +1296,8 @@ fetch(urlScript + "?fecha=2025-07-30")
   .catch(err => console.error("Fetch error:", err));
 
 </script>
-  <script>
-    
-    function renderizarBloquesExtras(index, extras) {
-  const contenedor = document.getElementById(`extraCampos-${index}`);
-  if (!contenedor) return;
-  contenedor.innerHTML = ""; // Limpiar bloques previos
-
-  if (!extras) return; // No hay extras, no hacemos nada
-
-  // Agrupar datos por número de bloque
-  const bloques = {};
-
-  Object.entries(extras).forEach(([clave, valor]) => {
-    const partes = clave.split("_");
-    if (partes.length !== 2) return; // clave mal formada
-    const campo = partes[0];
-    const num = partes[1];
-    if (!bloques[num]) bloques[num] = {};
-    bloques[num][campo] = valor;
-  });
-
-  // Crear bloques solo si tienen datos (al menos un campo con texto)
-  Object.entries(bloques).forEach(([num, bloque]) => {
-    const tieneDatos = Object.values(bloque).some(v => v && v.trim() !== "");
-    if (tieneDatos) {
-      crearBloqueConDatos(contenedor, bloque);
-    }
-  });
-}
-
-function crearBloqueConDatos(contenedor, bloque) {
-  const bloqueDiv = document.createElement("div");
-  bloqueDiv.className = "bloque-campos";
-  bloqueDiv.style.borderTop = "3px dotted #000000";
-  bloqueDiv.style.marginTop = "10px";
-  bloqueDiv.style.paddingTop = "10px";
-
-  // Fecha
-  const labelFecha = document.createElement("label");
-  labelFecha.textContent = "Fecha:";
-  const inputFecha = document.createElement("input");
-  inputFecha.type = "date";
-  if (bloque.Fecha) {
-  // Convertir "2025-08-01" o ISO a formato válido para <input type="date">
-  const fechaISO = new Date(bloque.Fecha).toISOString().split("T")[0];
-  inputFecha.value = fechaISO;
-} else {
-  inputFecha.value = "";
-}
-
-  inputFecha.disabled = true;
-
-  // Motivo (multiple)
-  const labelMotivo = document.createElement("label");
-  labelMotivo.textContent = "Motivo:";
-  const selectMotivo = document.createElement("select");
-  selectMotivo.multiple = true;
-  selectMotivo.disabled = true;
-  ["Consulta", "Vacuna", "Antiparasitario", "Tratamiento", "Cirugía", "Otro"].forEach(opcion => {
-    const opt = document.createElement("option");
-    opt.value = opcion;
-    opt.textContent = opcion;
-    // Seleccionar si está en los datos
-    if (bloque.Motivo) {
-      const motivos = bloque.Motivo.split(",").map(s => s.trim());
-      if (motivos.includes(opcion)) opt.selected = true;
-    }
-    selectMotivo.appendChild(opt);
-  });
-
-  // Descripción
-  const labelDescripcion = document.createElement("label");
-labelDescripcion.textContent = "Descripción:";
-const inputDescripcion = document.createElement("textarea");
-inputDescripcion.type = "text";
-inputDescripcion.value = bloque.Descripción || "";
-inputDescripcion.disabled = true;
-
-  // Observaciones
-  const labelObs = document.createElement("label");
-  labelObs.textContent = "Observaciones:";
-  const textareaObs = document.createElement("textarea");
-  textareaObs.rows = 3;
-  textareaObs.value = bloque.Observaciones || "";
-  textareaObs.disabled = true;
-
-  // Agregar todos los elementos al bloque
-  bloqueDiv.appendChild(labelFecha);
-  bloqueDiv.appendChild(inputFecha);
-  bloqueDiv.appendChild(labelMotivo);
-  bloqueDiv.appendChild(selectMotivo);
-  bloqueDiv.appendChild(labelDescripcion);
-  bloqueDiv.appendChild(inputDescripcion);
-  bloqueDiv.appendChild(labelObs);
-  bloqueDiv.appendChild(textareaObs);
-
-  contenedor.appendChild(bloqueDiv);
-}
-
-    
-  function agregarBloqueCampos(index) {
-  const container = document.getElementById(`extraCampos-${index}`);
-
-  const bloque = document.createElement("div");
-  bloque.className = "bloque-campos";
-  bloque.style.borderTop = "1px dotted #EDEDED";
-  bloque.style.marginTop = "10px";
-  bloque.style.paddingTop = "10px";
-
-  // Fecha (automática)
-  const fechaLabel = document.createElement("label");
-  fechaLabel.textContent = "Fecha:";
-  const fechaInput = document.createElement("input");
-  fechaInput.type = "date";
-  fechaInput.valueAsDate = new Date();
-  fechaInput.disabled = true;  // DESHABILITADO al crear
-
-  // Motivo (multi-opciones)
-  const motivoLabel = document.createElement("label");
-  motivoLabel.textContent = "Motivo:";
-  const motivoSelect = document.createElement("select");
-  motivoSelect.multiple = true;
-  motivoSelect.disabled = true; // DESHABILITADO al crear
-  ["Consulta", "Vacuna", "Antiparasitario", "Tratamiento", "Cirugía"].forEach(opcion => {
-    const opt = document.createElement("option");
-    opt.value = opcion;
-    opt.textContent = opcion;
-    motivoSelect.appendChild(opt);
-  });
-
-  // Descripción (texto corto)
-  const descripcionLabel = document.createElement("label");
-  descripcionLabel.textContent = "Descripción:";
-  const descripcionTextarea = document.createElement("textarea");
-  descripcionTextarea.type = "text";
-  descripcionTextarea.disabled = true;  // DESHABILITADO al crear
-
-  // Observaciones (texto largo)
-  const observacionesLabel = document.createElement("label");
-  observacionesLabel.textContent = "Observaciones:";
-  const observacionesTextarea = document.createElement("textarea");
-  observacionesTextarea.disabled = true; // DESHABILITADO al crear
-
-  // Agregar todos los campos al bloque
-  bloque.appendChild(fechaLabel);
-  bloque.appendChild(fechaInput);
-
-  bloque.appendChild(motivoLabel);
-  bloque.appendChild(motivoSelect);
-
-  bloque.appendChild(descripcionLabel);
-  bloque.appendChild(descripcionTextarea);
-
-  bloque.appendChild(observacionesLabel);
-  bloque.appendChild(observacionesTextarea);
-
-  // Agregar el bloque al contenedor del registro indicado
-  container.appendChild(bloque);
-}
-function parseFechaDDMMYYYY(str) {
-  // str esperado: "05/08/2025"
-  if (!str) return null;
-  const partes = str.split("/");
-  if (partes.length !== 3) return null;
-  const [dia, mes, anio] = partes.map(Number);
-  return new Date(anio, mes - 1, dia);
-}
-
-</script>
+ 
+ 
  <script>
   window.addEventListener('DOMContentLoaded', () => {
     if (sessionStorage.getItem('logueado') === 'true') {
