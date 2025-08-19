@@ -794,31 +794,21 @@ section.visible {
 
 <header class="navbar">
   <div class="navbar-logo"> 
-    
-   <img src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" />
+    <img src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" />
     <p style="text-align:center; margin:0px; font-size: 10px;">Tu Logo | Tus Colores</p>
-    
   </div>
- <div class="navbar-action">
-    <button class="btn-redireccion" onclick="window.location.href='panel/'">
-      Acceso
-    </button>
+  <div class="navbar-action">
+    <button class="btn-redireccion" onclick="window.location.href='panel/'">Acceso</button>
   </div>
-  
 </header>
-  <!-- Botón lateral de WhatsApp -->
+
 <a href="https://wa.me/543434477577?text=Hola%20quiero%20más%20informaci%C3%B3n%21" 
-   class="whatsapp-vertical" 
-   target="_blank" style="font-family: 'Montserrat', sans-serif;">
-   TurnoX
-</a>
-  <!-- Loader -->
+   class="whatsapp-vertical" target="_blank" style="font-family: 'Montserrat', sans-serif;">TurnoX</a>
+
 <div id="loaderOverlay">
   <div class="loader"></div>
   <p>Cargando...</p>
 </div>
-
- 
 
 <div class="calendario">
   <p class="texto-principal" style="text-align:center; margin:5px;">Buscá los turnos disponibles</p>
@@ -826,7 +816,6 @@ section.visible {
     <button onclick="cambiarMes(-1)">←</button>
     <div class="mes-textos">
       <h2 id="mesActual"></h2>
-      
       <p class="texto-secundario">Selecciona un día</p>
     </div>
     <button onclick="cambiarMes(1)">→</button>
@@ -837,21 +826,20 @@ section.visible {
   <div class="dias" id="dias"></div>
 </div>
 
-
 <div class="turnos" id="turnos"></div>
+
 <div id="dniStep" style="display:none; text-align:center; margin:20px;">
-  
   <input type="text" id="dniIngreso" placeholder="Tu DNI" maxlength="8" style="text-align: center; padding:8px; font-size:14px; margin:10px 0;">
   <br>
   <button onclick="verificarDni()" style="background:#533482; color:white; padding:10px 15px; border:none; border-radius:6px; cursor:pointer;">Cargar Datos con DNI</button>
   <p style="margin:15px 0;">o</p>
   <button onclick="mostrarFormularioNuevo()" style="background:#6B6870; color:white; padding:10px; border:none; border-radius:6px; cursor:pointer;">Es mi primera vez</button>
-  <p id="dniError" style="color:red; display:none; margin-top:10px;">No se encontró ningun cliente con ese DNI.</p>
+  <p id="dniError" style="color:red; display:none; margin-top:10px;">No se encontró ningún cliente con ese DNI.</p>
 </div>
 
 <div class="formulario" id="formularioReserva" style="display:none;">
   <h3>Reservar turno</h3>
-  <input type="text" id="nombre" placeholder="Nombre Comercio" value="Ej: Barbería X" readonly style="border: none; background: none; pointer-events: none; color: inherit; font-weight: bold; font-size: 16px;" />
+  <input type="text" id="nombre" placeholder="Nombre Comercio" value="Ej: Barbería X" readonly style="border:none; background:none; pointer-events:none; color:inherit; font-weight:bold; font-size:16px;" />
   <input type="text" id="nombreMascota" placeholder="Nombre y Apellido" required />
   <input type="text" id="tipoMascota" placeholder="Dirección" required />
   <input type="email" id="email" placeholder="Tu correo" required />
@@ -861,11 +849,10 @@ section.visible {
   <button onclick="enviarReserva()">Confirmar y enviar</button>
 </div>
 
-<div id="ticket">
-   
+<div id="ticket" style="display:none; text-align:center; margin:20px;">
   <img id="logoTicket" src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" style="max-width: 150px; display: block; margin: 0 auto 15px;">
-  <h3 style="Font-size: 24px;">Reservaste turno</h3>
-  <p><strong><span id="tNombre"></span></strong> </p>
+  <h3 style="font-size: 24px;">Reservaste turno</h3>
+  <p><strong><span id="tNombre"></span></strong></p>
   <p><strong>Nombre y Apellido:</strong> <span id="tNombreMascota"></span></p>
   <p><strong>Dirección:</strong> <span id="tTipoMascota"></span></p>
   <p><strong>Email:</strong> <span id="tEmail"></span></p>
@@ -876,571 +863,164 @@ section.visible {
   <p><strong>Comentario:</strong> <span id="tComentario"></span></p>
   <button onclick="descargarTicket()">Descargar Ticket</button>
 </div>
-<!-- Botón flotante para buscar por DNI 
-<div id="busquedaContainer">
-  <span id="textoBurbuja">Buscas una mascota extraviada?</span>
-  <button id="botonBuscarDni" title="Buscar DNI Mascota">
-    <i class="fas fa-search"></i>
-  </button>
-</div>-->
 
-
-<!-- Modal de búsqueda por DNI 
-<div id="modalBuscarDni">
-  <div class="contenido-modal"> <h2  style="font-family: 'Fredoka', sans-serif;">TurnoVet</h2>
-   <a href="https://ibb.co/3YzqJ1mQ"><img src="https://i.ibb.co/qFP7xjXq/tulogo.png" alt="Medalla-Bruzera" border="0"></a>
-    <h3>Buscar Mascota</h3>
-    <input type="text" id="inputDniBusqueda" placeholder="Ej: ABC123" maxlength="6" style="
-      text-align: center;
-      font-size: 1.2rem;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      box-sizing: border-box;
-      margin-bottom: 15px;
-      font-family: 'Montserrat', sans-serif;
-    "/>
-    <button onclick="buscarDni()">Buscar</button>
-    <button onclick="cerrarModalDni()">Cerrar</button>
-    <div id="resultadoBusqueda"></div>
-  </div>
-</div>-->
-<!-- ===== CONTACTO ===== 
-  <section id="contacto" style="padding:40px; text-align:center;">
-    <h2>Contacto</h2>
-    <p>Email: contacto@tudominio.com</p>
-    <p>Tel: +54 11 5555-5555</p>
-    <p>Instagram: @tuinstagram</p>
-  </section>-->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
-  const diasElemento = document.getElementById("dias");
-  const mesActualElemento = document.getElementById("mesActual");
-  const turnosElemento = document.getElementById("turnos");
-  const formularioElemento = document.getElementById("formularioReserva");
-  const urlScript = "https://script.google.com/macros/s/AKfycbzS0FRwhO9G1eEO7B77w9xwXNpicRk6WPs7erVieR6kR6G-nRjiVCX6uc4v_KecZNmP5Q/exec";
+const diasElemento = document.getElementById("dias");
+const mesActualElemento = document.getElementById("mesActual");
+const turnosElemento = document.getElementById("turnos");
+const formularioElemento = document.getElementById("formularioReserva");
+const urlScript = "TU_GOOGLE_APPS_SCRIPT_URL_AQUI"; // Cambiar por tu script
+let fecha = new Date();
+let diaSeleccionado = null;
+let turnoSeleccionado = null;
+let turnosOcupados = [];
+let turnosDisponibles = [];
 
-  let fecha = new Date();
-  let diaSeleccionado = null;
-  let turnoSeleccionado = null;
-  let turnosOcupados = [];
+// Formato de fechas
+function formatFechaDDMMYYYY(f){ return `${String(f.getDate()).padStart(2,'0')}/${String(f.getMonth()+1).padStart(2,'0')}/${f.getFullYear()}`; }
+function isoAFechaDDMMYYYY(iso){ const d = new Date(iso); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function isoATurnoHHmm(iso){ const d = new Date(iso); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
-  const turnosPorDia = {
-    "lunes": ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"],
-    "martes": ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"],
-    "miércoles": ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"],
-    "jueves": ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"],
-    "viernes": ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30","16:30", "17:00", "17:30"],
-    "sábado": ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30"],
-    "domingo": [] // Sin turnos
+// Calendario
+function renderizarCalendario(){
+  diasElemento.innerHTML = "";
+  const año = fecha.getFullYear(), mes = fecha.getMonth();
+  const primerDia = new Date(año, mes, 1);
+  const ultimoDia = new Date(año, mes + 1, 0);
+  mesActualElemento.textContent = fecha.toLocaleDateString("es-ES", {month:"long", year:"numeric"});
+  const inicioSemana = primerDia.getDay();
+  const diasMes = ultimoDia.getDate();
+  for(let i=0;i<inicioSemana;i++) diasElemento.innerHTML += `<div class="dia disabled"></div>`;
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  for(let i=1;i<=diasMes;i++){
+    const dia = new Date(año, mes, i);
+    let clase = dia < hoy ? "dia disabled":"dia";
+    if(dia.getTime()===hoy.getTime()) clase+=" hoy";
+    diasElemento.innerHTML+=`<div class="${clase}" data-dia="${i}" data-mes="${mes}" data-año="${año}">${i}</div>`;
+  }
+  document.querySelectorAll('.dia:not(.disabled)').forEach(el=>el.addEventListener('click',()=>seleccionarDia(+el.dataset.año,+el.dataset.mes,+el.dataset.dia)));
+}
+function cambiarMes(dir){ fecha.setMonth(fecha.getMonth()+dir); renderizarCalendario(); }
+
+// Fetch turnos ocupados y disponibles
+async function fetchTurnosOcupados(){
+  try{ const res = await fetch(urlScript); const data = await res.json();
+    turnosOcupados=(data.turnosOcupados||[]).map(t=>({fecha:isoAFechaDDMMYYYY(t.fecha), turno:isoATurnoHHmm(t.turno)}));
+  }catch{ turnosOcupados=[]; }
+}
+async function obtenerTurnosDisponibles(fecha){
+  try{ const fechaISO=fecha.toISOString().split('T')[0]; const res=await fetch(`${urlScript}?fecha=${fechaISO}`); const data=await res.json(); return data.turnos||[]; }catch(e){ console.error(e); return []; }
+}
+
+// Selección de día y turnos
+function seleccionarDia(año,mes,dia){
+  diaSeleccionado=new Date(año,mes,dia);
+  turnoSeleccionado=null;
+  turnosElemento.innerHTML=`<h3>Turnos para ${formatFechaDDMMYYYY(diaSeleccionado)}</h3>
+  <p id="mensajeTurnos" style="font-style:italic;color:#555;margin-top:10px;">Buscando turnos...</p>
+  <div id="contenedorTurnos" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div>`;
+  formularioElemento.style.display="none";
+  document.getElementById("ticket").style.display="none";
+  fetchTurnosOcupados().then(async()=>{
+    turnosDisponibles=await obtenerTurnosDisponibles(diaSeleccionado);
+    renderizarTurnos();
+  }).catch(()=>document.getElementById("mensajeTurnos").textContent="Error al cargar turnos.");
+}
+function renderizarTurnos(){
+  const fechaTexto=formatFechaDDMMYYYY(diaSeleccionado);
+  const mensaje=document.getElementById("mensajeTurnos");
+  const contenedorTurnos=document.getElementById("contenedorTurnos");
+  if(mensaje) mensaje.textContent="Cargando turnos disponibles...";
+  if(contenedorTurnos) contenedorTurnos.innerHTML="";
+  setTimeout(()=>{
+    let count=0;
+    turnosDisponibles.forEach(turno=>{
+      const ocupado=turnosOcupados.some(t=>t.fecha===fechaTexto && t.turno===turno);
+      if(!ocupado){
+        count++;
+        const btn=document.createElement("button");
+        btn.textContent=`Reservar ${turno}`;
+        btn.classList.add("turno-button");
+        btn.onclick=()=>mostrarFormulario(turno);
+        contenedorTurnos.appendChild(btn);
+      }
+    });
+    if(count===0) contenedorTurnos.innerHTML="<p><em>No hay turnos disponibles.</em></p>";
+    if(mensaje) mensaje.textContent="";
+    turnosElemento.scrollIntoView({behavior:"smooth"});
+  },600);
+}
+
+// Formulario
+function mostrarFormulario(turno){ turnoSeleccionado=turno; formularioElemento.style.display="none"; document.getElementById("dniStep").style.display="block"; document.getElementById("dniStep").scrollIntoView({behavior:"smooth"});}
+function mostrarFormularioNuevo(){ document.getElementById("dniStep").style.display="none"; formularioElemento.style.display="block"; formularioElemento.scrollIntoView({behavior:"smooth"});}
+
+// Enviar reserva
+function enviarReserva(){
+  const data={
+    nombre:document.getElementById("nombre").value,
+    nombreMascota:document.getElementById("nombreMascota").value,
+    tipoMascota:document.getElementById("tipoMascota").value,
+    email:document.getElementById("email").value,
+    telefono:document.getElementById("telefono").value,
+    dniMascota:document.getElementById("dniMascota").value,
+    comentario:document.getElementById("comentario").value,
+    fecha:formatFechaDDMMYYYY(diaSeleccionado),
+    turno:turnoSeleccionado
   };
-
-  function obtenerTurnosDisponibles(fecha) {
-    const opcionesDias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-    const nombreDia = opcionesDias[fecha.getDay()];
-    return turnosPorDia[nombreDia] || [];
-  }
-
-  // Inicializa los turnos para la fecha actual
-  let turnosDisponibles = obtenerTurnosDisponibles(fecha);
-
-  function formatFechaDDMMYYYY(f){
-    const d = f.getDate().toString().padStart(2,'0');
-    const m = (f.getMonth()+1).toString().padStart(2,'0');
-    return `${d}/${m}/${f.getFullYear()}`;
-  }
-
-  function isoAFechaDDMMYYYY(iso){ 
-    const d = new Date(iso);
-    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-  }
-
-  function isoATurnoHHmm(iso){
-    const d = new Date(iso);
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  }
-
-  function renderizarCalendario(){
-    diasElemento.innerHTML = "";
-    const año = fecha.getFullYear(), mes = fecha.getMonth();
-    const primerDia = new Date(año, mes, 1);
-    const ultimoDia = new Date(año, mes + 1, 0);
-    mesActualElemento.textContent = fecha.toLocaleDateString("es-ES", {month:"long", year:"numeric"});
-    const inicioSemana = primerDia.getDay();
-    const diasMes = ultimoDia.getDate();
-
-    for(let i=0; i < inicioSemana; i++){
-      diasElemento.innerHTML += `<div class="dia disabled"></div>`;
-    }
-
-    const hoy = new Date(); hoy.setHours(0,0,0,0);
-    for(let i=1; i <= diasMes; i++){
-      const dia = new Date(año, mes, i);
-      let clase = dia < hoy ? "dia disabled" : "dia"
-
-      // ✅ marcar el día actual
-  if (dia.getTime() === hoy.getTime()) {
-    clase += " hoy";
-  }
-      diasElemento.innerHTML += `<div class="${clase}" data-dia="${i}" data-mes="${mes}" data-año="${año}">${i}</div>`;
-    }
-
-    document.querySelectorAll('.dia:not(.disabled)').forEach(el => {
-      el.addEventListener('click', () => {
-        seleccionarDia(+el.dataset.año, +el.dataset.mes, +el.dataset.dia);
-      });
-    });
-  }
-
-  function cambiarMes(dir){
-    fecha.setMonth(fecha.getMonth() + dir);
-    renderizarCalendario();
-  }
-
-  function fetchTurnosOcupados(){
-    return fetch(urlScript)
-      .then(r => r.json())
-      .then(data => {
-        turnosOcupados = (data.turnosOcupados || []).map(t => ({
-          fecha: isoAFechaDDMMYYYY(t.fecha),
-          turno: isoATurnoHHmm(t.turno)
-        }));
-      })
-      .catch(() => {
-        turnosOcupados = [];
-      });
-  }
-
-  function seleccionarDia(año, mes, dia) {
-    diaSeleccionado = new Date(año, mes, dia);
-    turnoSeleccionado = null;
-
-    turnosElemento.innerHTML = `
-      <h3>Turnos para ${formatFechaDDMMYYYY(diaSeleccionado)}</h3>
-      <p id="mensajeTurnos" style="font-style: italic; color: #555; margin-top:10px;">Buscando turnos para esta fecha...</p>
-      <div id="contenedorTurnos" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top: 15px;"></div>
-    `;
-
-    formularioElemento.style.display = "none";
-    document.getElementById("ticket").classList.remove("visible");
-
-    fetchTurnosOcupados()
-      .then(() => {
-        // Actualiza turnosDisponibles para el día seleccionado
-        turnosDisponibles = obtenerTurnosDisponibles(diaSeleccionado);
-        renderizarTurnos();
-      })
-      .catch(() => {
-        const mensaje = document.getElementById("mensajeTurnos");
-        if (mensaje) mensaje.textContent = "Error al cargar los turnos.";
-      });
-  }
-
-  function renderizarTurnos() {
-    const fechaTexto = formatFechaDDMMYYYY(diaSeleccionado);
-    const mensaje = document.getElementById("mensajeTurnos");
-    const contenedorTurnos = document.getElementById("contenedorTurnos");
-
-    if (mensaje) mensaje.textContent = "Cargando turnos disponibles...";
-    if (contenedorTurnos) contenedorTurnos.innerHTML = "";
-
-    setTimeout(() => {
-      let count = 0;
-      turnosDisponibles.forEach(turno => {
-        const ocupado = turnosOcupados.some(t => t.fecha === fechaTexto && t.turno === turno);
-        if (!ocupado) {
-          count++;
-          const btn = document.createElement("button");
-btn.textContent = `Reservar ${turno}`;
-btn.classList.add("turno-button");  // <-- aquí agregamos clase para estilos CSS
-btn.onclick = () => mostrarFormulario(turno);
-contenedorTurnos.appendChild(btn);
-        }
-      });
-
-      if (count === 0) {
-        if (contenedorTurnos) contenedorTurnos.innerHTML = "<p><em>No hay turnos disponibles.</em></p>";
-      }
-
-      if (mensaje) mensaje.textContent = "";
-
-      turnosElemento.scrollIntoView({ behavior: "smooth" });
-    }, 600);
-  }
-
-  function mostrarFormulario(turno) {
-    turnoSeleccionado = turno;
-    formularioElemento.style.display = "none";
-    document.getElementById("dniStep").style.display = "block";
-    document.getElementById("dniStep").scrollIntoView({ behavior: "smooth" });
-  }
-
-  function mostrarFormularioNuevo() {
-    document.getElementById("dniStep").style.display = "none";
-    formularioElemento.style.display = "block";
-    formularioElemento.scrollIntoView({ behavior: "smooth" });
-  }
-
-  function generarDniMascota(){
-    const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const nums = "0123456789";
-    return letras[Math.floor(Math.random() * 26)] + letras[Math.floor(Math.random() * 26)] + letras[Math.floor(Math.random() * 26)] +
-      nums[Math.floor(Math.random() * 10)] + nums[Math.floor(Math.random() * 10)] + nums[Math.floor(Math.random() * 10)];
-  }
-
-  function enviarReserva(){
-    mostrarLoader("Enviando reserva...");  // MOSTRAR loader al iniciar envío
-    
-    const nombre = nombreInput.value.trim();
-    const nombreMascota = nombreMascotaInput.value.trim();
-    const tipoMascota = tipoMascotaInput.value.trim();
-    const email = emailInput.value.trim();
-    const telefono = telefonoInput.value.trim();
-    let dniMascota = dniMascotaInput.value.trim();
-    const comentario = comentarioInput.value.trim();
-
-    if (!nombre || !email || !telefono || !turnoSeleccionado || !diaSeleccionado) {
-      alert("Completá todos los datos");
-      ocultarLoader(); // Ocultar loader si falta algún dato
-      return;
-    }
-    // Creamos el mensaje completo después de obtener todos los datos
-  const mensaje = encodeURIComponent(
-    `🔔 Nueva solicitud de turno:\n` +
-    `Cliente: ${nombreMascota}\n` +
-    `Nombre comercio: ${nombre}\n` +
-    `Turno: ${turnoSeleccionado} - ${formatFechaDDMMYYYY(diaSeleccionado)}\n` +
-    `Teléfono: ${telefono}\n` +
-    `Comentario: ${comentario || "Ninguno"}`
-  );
-
-  let phone = "5493434477577";
-  let apikey = "9663015";
-
-  fetch(`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${mensaje}&apikey=${apikey}`)
-    .then(() => console.log("Aviso enviado por WhatsApp"))
-    .catch(err => console.error("Error enviando WhatsApp", err));
-    
-    const datos = {
-      nombre,
-      nombreMascota,
-      tipoMascota,
-      email,
-      telefono,
-      dniMascota,
-      fecha: formatFechaDDMMYYYY(diaSeleccionado),
-      turno: turnoSeleccionado,
-      comentario
-    };
-
-    fetch(urlScript, {
-      method: "POST",
-      body: new URLSearchParams({ datos: JSON.stringify(datos) })
-    })
-    .then(r => r.json())
-    .then(res => {
-      ocultarLoader();  // OCULTAR loader justo antes de mostrar ticket o alerta
-      if (res.success) {
-        // Mostrar ticket con datos
-        tNombre.textContent = nombre;
-        tNombreMascota.textContent = nombreMascota;
-        tTipoMascota.textContent = tipoMascota;
-        tEmail.textContent = email;
-        tTelefono.textContent = telefono;
-        tDniMascota.textContent = dniMascota;
-        tFecha.textContent = formatFechaDDMMYYYY(diaSeleccionado);
-        tTurno.textContent = turnoSeleccionado;
-        tComentario.textContent = comentario;
-
-        turnosElemento.innerHTML = "";
-        formularioElemento.style.display = "none";
-        document.getElementById("ticket").classList.add("visible");
-        document.getElementById("ticket").scrollIntoView({ behavior: "smooth" });
-
-        alert("Reserva enviada exitosamente");
-      } else {
-        alert("Error al reservar turno, consulte con su veterinario");
-      }
-    });
-  }
-
-  function descargarTicket() {
-    const ticket = document.getElementById("ticket");
-    const logo = document.getElementById("logoTicket");
-
-    mostrarLoader("Generando ticket...");
-
-    if (logo.complete) {
-      capturarTicket(ticket);
-    } else {
-      logo.onload = () => capturarTicket(ticket);
-    }
-  }
-
-  function capturarTicket(ticket) {
-    html2canvas(ticket, { useCORS: true, scale: 2 })
-      .then(canvas => {
-        mostrarLoader("Descargando ticket...");
-
-        const link = document.createElement("a");
-        link.download = "turno_mascota.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-
-        setTimeout(() => ocultarLoader(), 1500);
-      })
-      .catch(() => {
-        ocultarLoader();
-        alert("Error al generar el ticket.");
-      });
-  }
-
-  // Inputs directos (asumiendo que existen en el DOM)
-  const nombreInput = document.getElementById("nombre");
-  const nombreMascotaInput = document.getElementById("nombreMascota");
-  const tipoMascotaInput = document.getElementById("tipoMascota");
-  const emailInput = document.getElementById("email");
-  const telefonoInput = document.getElementById("telefono");
-  const dniMascotaInput = document.getElementById("dniMascota");
-  const comentarioInput = document.getElementById("comentario");
-
-  // Elementos ticket para mostrar datos (asumiendo que existen)
-  const tNombre = document.getElementById("tNombre");
-  const tNombreMascota = document.getElementById("tNombreMascota");
-  const tTipoMascota = document.getElementById("tTipoMascota");
-  const tEmail = document.getElementById("tEmail");
-  const tTelefono = document.getElementById("tTelefono");
-  const tDniMascota = document.getElementById("tDniMascota");
-  const tFecha = document.getElementById("tFecha");
-  const tTurno = document.getElementById("tTurno");
-  const tComentario = document.getElementById("tComentario");
-
-  // Funciones para mostrar y ocultar loader (debes implementarlas en tu código)
-  function mostrarLoader(mensaje) {
-    // Implementa mostrar un loader con mensaje
-    console.log("Loader:", mensaje);
-  }
-  function ocultarLoader() {
-    // Implementa ocultar loader
-    console.log("Loader ocultado");
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-  renderizarCalendario();
-
-  // 👇 Selecciona automáticamente el día de hoy
-  const hoy = new Date();
-  seleccionarDia(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-});
-</script>
-
-  <script>
-  // Mostrar modal
-document.getElementById("botonBuscarDni").addEventListener("click", () => {
-  document.getElementById("modalBuscarDni").style.display = "flex";
-});
-
-// Cerrar modal
-function cerrarModalDni() {
-  document.getElementById("modalBuscarDni").style.display = "none";
-  document.getElementById("resultadoBusqueda").innerHTML = "";
-  document.getElementById("inputDniBusqueda").value = "";
+  fetch(urlScript,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  }).then(()=>mostrarTicket(data)).catch(e=>alert("Error al enviar: "+e));
 }
 
-function buscarDni() {
-  const dniInput = document.getElementById("inputDniBusqueda");
-  const resultadoDiv = document.getElementById("resultadoBusqueda");
-  const dni = dniInput.value.trim().toUpperCase();
-
-  if (!dni) {
-    alert("Ingresá un ID válido");
-    return;
-  }
-
-  // Mostrar mensaje de búsqueda
-  resultadoDiv.style.color = "#533482";
-  resultadoDiv.innerHTML = "<em>Buscando mascota...</em>";
-
-  mostrarLoader(); // Si usás loader, sino podés sacar esta línea
-
-  fetch(urlScript + "?dni=" + dni)
-    .then(res => res.json())
-    .then(data => {
-      ocultarLoader();
-
-      if (data.success && data.reserva) {
-        const r = data.reserva;
-        resultadoDiv.style.color = "#533482";
-        resultadoDiv.innerHTML = `
-          <p><strong>Nombre:</strong> ${r.nombre}</p>
-          <p><strong>Mascota:</strong> ${r.nombreMascota} (${r.tipoMascota})</p>
-          <p><strong>Email:</strong> ${r.email}</p>
-          <p><strong>Teléfono:</strong> ${r.telefono}</p>
-          <p><strong>ID Mascota:</strong> ${r.dniMascota}</p>
-        `;
-      } else {
-        resultadoDiv.style.color = "red";
-        resultadoDiv.innerHTML = `<p>No se encontró ninguna reserva con ese ID.</p>`;
-      }
-    })
-    .catch(() => {
-      ocultarLoader();
-      alert("Error al buscar en la base de datos.");
-      resultadoDiv.innerHTML = "";
-    });
-}
-</script>
-  
-<script>
- 
-  // ✅ Evento especial para "Turnos"
-  document.querySelector('a[href="#turnos"]').addEventListener('click', (e) => {
-    e.preventDefault(); // Evitar salto brusco
-
-    // Limpiar elementos visibles
-    turnosElemento.innerHTML = "";
-    formularioElemento.style.display = "none";
-    document.getElementById("ticket").classList.remove("visible");
-
-    // Renderizar calendario inicial
-    renderizarCalendario();
-
-    // Scroll suave al calendario
-    document.querySelector('.calendario').scrollIntoView({ behavior: 'smooth' });
-  });
-</script>
-<script>
-  const sections = document.querySelectorAll("section, .inicio, .galeria, .turnos, contacto");
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.2 }); // Se activa cuando 20% es visible
-
-  sections.forEach(sec => observer.observe(sec));
-</script>
-  <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const texto = document.getElementById('textoBurbuja');
-    // Aparece a los 2 segundos
-    setTimeout(() => {
-      texto.classList.add('visible');
-      // Desaparece 3 segundos después (5s total)
-      setTimeout(() => {
-        texto.classList.remove('visible');
-      }, 6000);
-    }, 2000);
-  });
-</script>
-<script>
-  const carrusel = document.querySelector('.carrusel');
-  const flechaIzq = document.querySelector('.flecha.izquierda');
-  const flechaDer = document.querySelector('.flecha.derecha');
-  const items = document.querySelectorAll('.carrusel .item');
-  
-  let desplazamiento = 0;
-
-  function calcularAnchoItem() {
-    return carrusel.parentElement.offsetWidth; // Se mueve una "pantalla" completa
-  }
-
-  flechaDer.addEventListener('click', () => {
-    desplazamiento -= calcularAnchoItem();
-    const maxScroll = -(carrusel.scrollWidth - carrusel.parentElement.offsetWidth);
-    if (desplazamiento < maxScroll) desplazamiento = maxScroll;
-    carrusel.style.transform = `translateX(${desplazamiento}px)`;
-  });
-
-  flechaIzq.addEventListener('click', () => {
-    desplazamiento += calcularAnchoItem();
-    if (desplazamiento > 0) desplazamiento = 0;
-    carrusel.style.transform = `translateX(${desplazamiento}px)`;
-  });
-
-  // ✅ Swipe táctil en móvil
-  let startX = 0;
-  carrusel.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-  carrusel.addEventListener('touchend', e => {
-    const endX = e.changedTouches[0].clientX;
-    const anchoPantalla = calcularAnchoItem();
-    if (endX < startX - 50) desplazamiento -= anchoPantalla;
-    if (endX > startX + 50) desplazamiento += anchoPantalla;
-
-    const maxScroll = -(carrusel.scrollWidth - carrusel.parentElement.offsetWidth);
-    if (desplazamiento < maxScroll) desplazamiento = maxScroll;
-    if (desplazamiento > 0) desplazamiento = 0;
-
-    carrusel.style.transform = `translateX(${desplazamiento}px)`;
-  });
-</script>
-  <script>
-  function verificarDni() {
-  const dni = document.getElementById("dniIngreso").value.trim().toUpperCase();
-  const error = document.getElementById("dniError");
-  error.style.display = "none";
-
-  if (!dni) {
-    alert("Ingresá un ID válido");
-    return;
-  }
-
-  mostrarLoader("Verificando DNI...");
-
-  fetch(urlScript + "?dni=" + dni)
-    .then(res => res.json())
-    .then(data => {
-      ocultarLoader();
-      if (data.success && data.reserva) {
-        // Autocompletar formulario
-        const r = data.reserva;
-        nombreInput.value = r.nombre || "";
-        nombreMascotaInput.value = r.nombreMascota || "";
-        tipoMascotaInput.value = r.tipoMascota || "";
-        emailInput.value = r.email || "";
-        telefonoInput.value = r.telefono || "";
-        dniMascotaInput.value = r.dniMascota || "";
-
-        document.getElementById("dniStep").style.display = "none";
-        formularioElemento.style.display = "block";
-        formularioElemento.scrollIntoView({ behavior: "smooth" });
-      } else {
-        error.style.display = "block";
-      }
-    })
-    .catch(() => {
-      ocultarLoader();
-      alert("Error al buscar el ID en la base de datos.");
-    });
+// Mostrar ticket
+function mostrarTicket(data){
+  document.getElementById("tNombre").textContent=data.nombre;
+  document.getElementById("tNombreMascota").textContent=data.nombreMascota;
+  document.getElementById("tTipoMascota").textContent=data.tipoMascota;
+  document.getElementById("tEmail").textContent=data.email;
+  document.getElementById("tTelefono").textContent=data.telefono;
+  document.getElementById("tDniMascota").textContent=data.dniMascota;
+  document.getElementById("tFecha").textContent=data.fecha;
+  document.getElementById("tTurno").textContent=data.turno;
+  document.getElementById("tComentario").textContent=data.comentario;
+  formularioElemento.style.display="none";
+  document.getElementById("dniStep").style.display="none";
+  document.getElementById("ticket").style.display="block";
+  document.getElementById("ticket").scrollIntoView({behavior:"smooth"});
 }
 
+// Descargar ticket
+function descargarTicket(){
+  html2canvas(document.getElementById("ticket")).then(canvas=>{
+    const link=document.createElement("a");
+    link.href=canvas.toDataURL("image/png");
+    link.download="TurnoX.png";
+    link.click();
+  });
+}
+
+// Verificar DNI
+function verificarDni(){
+  const dni=document.getElementById("dniIngreso").value.trim();
+  if(!dni){ document.getElementById("dniError").style.display="block"; return;}
+  fetch(`${urlScript}?dni=${dni}`).then(res=>res.json()).then(data=>{
+    if(data.cliente){
+      document.getElementById("nombreMascota").value=data.cliente.nombre;
+      document.getElementById("tipoMascota").value=data.cliente.direccion;
+      document.getElementById("email").value=data.cliente.email;
+      document.getElementById("telefono").value=data.cliente.telefono;
+      document.getElementById("dniMascota").value=dni;
+      mostrarFormularioNuevo();
+    }else document.getElementById("dniError").style.display="block";
+  }).catch(()=>document.getElementById("dniError").style.display="block");
+}
+
+document.addEventListener("DOMContentLoaded",()=>{ renderizarCalendario(); const hoy=new Date(); seleccionarDia(hoy.getFullYear(),hoy.getMonth(),hoy.getDate());});
 </script>
-  <script>
-  function mostrarLoader(mensaje = "Cargando...") {
-    document.getElementById("loaderOverlay").style.display = "flex";
-    document.querySelector("#loaderOverlay p").textContent = mensaje;
-  }
-
-  function ocultarLoader() {
-    document.getElementById("loaderOverlay").style.display = "none";
-  }
-</script>
-<script>
-  const burbuja = document.getElementById("textoBurbuja");
-
-  // Mostrar burbuja
-  setTimeout(() => {
-    burbuja.classList.add("visible");
-  }, 15000);
-
-  // Ocultar burbuja y quitar interacción
-  setTimeout(() => {
-    burbuja.classList.remove("visible");
-  }, 20000);
-</script>
-
 </body>
+
 </html>
