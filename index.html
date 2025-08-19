@@ -1,97 +1,100 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Gestión de Horarios</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .bloque { border: 1px solid #ccc; padding: 10px; margin: 10px 0; border-radius: 5px; }
-    label { display: inline-block; width: 80px; }
-    input, select { margin: 5px; }
-    button { margin-top: 10px; padding: 5px 10px; cursor: pointer; }
-  </style>
+<meta charset="UTF-8">
+<title>Agregar Horarios</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  input, select, button { margin: 5px 0; padding: 5px; }
+  .horario { margin-bottom: 10px; }
+</style>
 </head>
 <body>
-  <h2>Cargar Horarios de Profesionales</h2>
+<h1>Agregar Horarios de Profesionales</h1>
 
-  <label>Profesional:</label>
-  <input type="text" id="profesional" placeholder="Ej: Pepe"><br><br>
+<label>Profesional:</label>
+<input type="text" id="profesional" placeholder="Ej: Pepe"><br>
 
-  <div id="bloques-container"></div>
-  <button onclick="agregarBloque()">+ Agregar bloque</button><br><br>
+<div id="horarios-container"></div>
 
-  <button onclick="enviarHorarios()">Guardar en hoja</button>
+<button type="button" onclick="agregarHorario()">Agregar horario</button><br>
+<button type="button" onclick="enviarHorarios()">Enviar horarios</button>
 
-  <p id="respuesta"></p>
+<script>
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwNcfAPpftC7aR9cc2NFq3LHU_EJO2S8KHK067m3ySgwqYbKWMFW63W9c1VP4Vf-q3gQQ/exec"; // reemplaza con tu URL web app
 
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNcfAPpftC7aR9cc2NFq3LHU_EJO2S8KHK067m3ySgwqYbKWMFW63W9c1VP4Vf-q3gQQ/exec"; // <- pegá la URL de tu implementación (termina en /exec)
+function agregarHorario() {
+  const container = document.getElementById("horarios-container");
+  const div = document.createElement("div");
+  div.className = "horario";
 
-    function agregarBloque() {
-      const container = document.getElementById("bloques-container");
-      const div = document.createElement("div");
-      div.className = "bloque";
-      div.innerHTML = `
-        <label>Día:</label>
-        <select class="dia">
-          <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miércoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-          <option value="Sábado">Sábado</option>
-          <option value="Domingo">Domingo</option>
-        </select>
-        <label>Inicio:</label>
-        <input type="time" class="inicio" required>
-        <label>Fin:</label>
-        <input type="time" class="fin" required>
-        <button onclick="this.parentNode.remove()">🗑️</button>
-      `;
-      container.appendChild(div);
-    }
+  const select = document.createElement("select");
+  select.className = "dia";
+  ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].forEach(d=>{
+    const option = document.createElement("option");
+    option.value = d;
+    option.textContent = d;
+    select.appendChild(option);
+  });
 
-    async function enviarHorarios() {
-      const profesional = document.getElementById("profesional").value.trim();
-      if (!profesional) {
-        alert("Ingresá el nombre del profesional");
-        return;
-      }
+  const inputInicio = document.createElement("input");
+  inputInicio.type = "time";
+  inputInicio.className = "inicio";
 
-      const bloques = [];
-      document.querySelectorAll(".bloque").forEach(b => {
-        const dia = b.querySelector(".dia").value;
-        const inicio = b.querySelector(".inicio").value;
-        const fin = b.querySelector(".fin").value;
-        if (inicio && fin) {
-          bloques.push({ dia, inicio, fin });
-        }
-      });
+  const inputFin = document.createElement("input");
+  inputFin.type = "time";
+  inputFin.className = "fin";
 
-      if (bloques.length === 0) {
-        alert("Agregá al menos un bloque horario");
-        return;
-      }
+  const btnQuitar = document.createElement("button");
+  btnQuitar.type = "button";
+  btnQuitar.textContent = "Quitar";
+  btnQuitar.onclick = () => div.remove();
 
-      try {
-        const res = await fetch(WEB_APP_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    profesional: profesional,
-    horarios: bloques
+  div.appendChild(select);
+  div.appendChild(inputInicio);
+  div.appendChild(inputFin);
+  div.appendChild(btnQuitar);
+
+  container.appendChild(div);
+}
+
+function enviarHorarios() {
+  const profesional = document.getElementById("profesional").value.trim();
+  if(!profesional) return alert("Ingresa el nombre del profesional");
+
+  const horariosDivs = document.querySelectorAll("#horarios-container .horario");
+  const horarios = [];
+  horariosDivs.forEach(div => {
+    const dia = div.querySelector(".dia").value;
+    const inicio = div.querySelector(".inicio").value;
+    const fin = div.querySelector(".fin").value;
+    if(inicio && fin) horarios.push(`${dia},${inicio},${fin}`);
+  });
+
+  if(horarios.length === 0) return alert("Agrega al menos un horario");
+
+  const formData = new URLSearchParams();
+  formData.append("profesional", profesional);
+  horarios.forEach(h => formData.append("horarios", h));
+
+  fetch(URL_APPS_SCRIPT, {
+    method: "POST",
+    body: formData
   })
-});
+  .then(res => res.json())
+  .then(data => {
+    if(data.status === "ok") {
+      alert("Horarios enviados correctamente!");
+      // Limpiar formulario si querés
+      document.getElementById("horarios-container").innerHTML = "";
+      document.getElementById("profesional").value = "";
+    } else alert("Error: " + data.message);
+  })
+  .catch(err => alert("Error al enviar: " + err));
+}
 
-
-        const data = await res.json();
-        document.getElementById("respuesta").innerText =
-          data.status === "ok" ? "✅ Horarios guardados con éxito" : "⚠️ Error al guardar";
-      } catch (err) {
-        console.error(err);
-        document.getElementById("respuesta").innerText = "❌ Error de conexión";
-      }
-    }
-  </script>
+// Agregar un horario por defecto al cargar la página
+agregarHorario();
+</script>
 </body>
 </html>
