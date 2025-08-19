@@ -949,7 +949,7 @@ async function obtenerTurnosDisponibles(fecha){
     const fechaISO = fecha.toISOString().split('T')[0];
     const res = await fetch(`${urlScript}?accion=turnosDisponibles&fecha=${fechaISO}`);
     const data = await res.json();
-    // Renombrar 'turno' a 'hora' para mantener compatibilidad con renderizarTurnos
+    // Renombrar 'turno' a 'hora' para compatibilidad con renderizarTurnos
     return (data.turnos || []).map(t => ({...t, hora: t.turno}));
   }catch(e){
     console.error(e);
@@ -957,8 +957,8 @@ async function obtenerTurnosDisponibles(fecha){
   }
 }
 
-function seleccionarDia(año,mes,dia){
-  diaSeleccionado = new Date(año,mes,dia);
+function seleccionarDia(año, mes, dia){
+  diaSeleccionado = new Date(año, mes, dia);
   turnoSeleccionado = null;
   turnosElemento.innerHTML = `<h3>Turnos para ${formatFechaDDMMYYYY(diaSeleccionado)}</h3>
     <p id="mensajeTurnos" style="font-style:italic;color:#555;margin-top:10px;">Buscando turnos...</p>
@@ -998,6 +998,7 @@ function renderizarTurnos(){
   if(mensaje) mensaje.textContent="";
   turnosElemento.scrollIntoView({behavior:"smooth"});
 }
+ 
 
 // ===== Formulario, enviar reserva y ticket =====
 function mostrarFormulario(turno){ turnoSeleccionado=turno; formularioElemento.style.display="none"; document.getElementById("dniStep").style.display="block"; document.getElementById("dniStep").scrollIntoView({behavior:"smooth"});}
