@@ -98,14 +98,22 @@ async function enviarTurnos() {
     }
   });
 
+  const payload = {profesional, horarios, turnos: todosTurnos};
+  
+  console.log("Payload a enviar:", payload); // 🔹 Log del JSON que vamos a enviar
+
   try {
     const res = await fetch(URL_APPS_SCRIPT, {
       method: "POST",
       headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({profesional, horarios, turnos: todosTurnos})
+      body: JSON.stringify(payload)
     });
 
+    console.log("Respuesta fetch raw:", res); // 🔹 Log de la respuesta cruda
+
     const data = await res.json();
+    console.log("Respuesta JSON:", data); // 🔹 Log del JSON parseado
+
     if(data.status === "ok") {
       document.getElementById("mensaje").innerText = "✅ Turnos enviados correctamente!";
       document.getElementById("bloques-container").innerHTML = "";
@@ -114,8 +122,8 @@ async function enviarTurnos() {
       document.getElementById("mensaje").innerText = "⚠️ Error: " + data.message;
     }
   } catch(err) {
+    console.error("Error catch fetch:", err); // 🔹 Log del error real
     document.getElementById("mensaje").innerText = "❌ Error al enviar: " + err;
-    console.error(err);
   }
 }
 
