@@ -37,8 +37,8 @@ td input { width: 80px; }
 <p id="mensaje"></p>
 
 <script>
-// URL del Web App de Apps Script (poné la tuya)
-const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzPJY_dItLm_tYC4ynyN9iXzQdYe2yx4viPSbdIH_PwhT5yyFHfdbazwJHvIBd7Mf_iEA/exec";
+// --- URL del Web App de Apps Script ---
+const URL_APPS_SCRIPT = "TU_URL_DEL_WEBAPP"; // reemplazar por la tuya
 
 function agregarBloque() {
   const container = document.getElementById("bloques-container");
@@ -78,7 +78,6 @@ function agregarBloque() {
   actualizarResumen();
 }
 
-// Genera turnos de 30 min por bloque
 function generarTurnosDeBloque(profesional, dia, inicio, fin) {
   const turnos = [];
   const [hInicio, mInicio] = inicio.split(":").map(Number);
@@ -93,7 +92,6 @@ function generarTurnosDeBloque(profesional, dia, inicio, fin) {
   return turnos;
 }
 
-// Actualiza tabla de resumen editable
 function actualizarResumen() {
   const tbody = document.querySelector("#resumen tbody");
   tbody.innerHTML = "";
@@ -141,8 +139,7 @@ function actualizarResumen() {
   });
 }
 
-// Enviar turnos a Apps Script
-function enviarTurnos() {
+async function enviarTurnos() {
   const profesional = document.getElementById("profesional").value.trim();
   if(!profesional) return alert("Ingresá el nombre del profesional");
 
@@ -161,25 +158,24 @@ function enviarTurnos() {
     todosTurnos = todosTurnos.concat(generarTurnosDeBloque(profesional,dia,inicio,fin));
   });
 
-  fetch(URL_APPS_SCRIPT, {
-    method: "POST",
-    body: JSON.stringify({profesional, horarios, turnos: todosTurnos}),
-    headers: { "Content-Type": "application/json" }
-  })
-  .then(res=>res.json())
-  .then(data=>{
+  try {
+    const res = await fetch(URL_APPS_SCRIPT, {
+      method: "POST",
+      body: JSON.stringify({profesional, horarios, turnos: todosTurnos}),
+      headers: { "Content-Type": "application/json" }
+    });
+    const data = await res.json();
     if(data.status==="ok") {
       document.getElementById("mensaje").innerText="✅ Turnos enviados correctamente!";
     } else {
       document.getElementById("mensaje").innerText="⚠️ Error: "+data.message;
     }
-  })
-  .catch(err=>{
+  } catch(err) {
     document.getElementById("mensaje").innerText="⚠️ Error al enviar: "+err;
-  });
+  }
 }
 
-// Inicializar con un bloque
+// inicializar con un bloque
 agregarBloque();
 </script>
 
