@@ -1,19 +1,187 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Turnero de Profesionales</title>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
-    iframe { width: 100%; height: 100vh; border: none; }
-  </style>
+<meta charset="UTF-8">
+<title>Turnero de Profesionales</title>
+<style>
+body { font-family: Arial; margin: 20px; }
+input, select, button { margin: 5px 0; padding: 5px; }
+.bloque { margin-bottom: 10px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+table { border-collapse: collapse; margin-top: 10px; width: 100%; }
+th, td { border: 1px solid #ccc; padding: 5px; text-align: center; vertical-align: top; }
+th { background-color: #f0f0f0; }
+td div { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+td input { width: 80px; }
+</style>
 </head>
 <body>
 
-<h1 style="text-align:center;">Turnero de Profesionales</h1>
+<h1>Turnero de Profesionales</h1>
 
-<!-- Reemplazá la URL con la de tu Web App de Apps Script -->
-<iframe src="https://script.google.com/macros/s/AKfycbwcEXGadg504d0LrF-pXju5GIapQDQY1pLLTVSUPtKXgTGRDn3oO99DKXOk-ZNZAGGKrg/exec"></iframe>
+<label>Profesional:</label>
+<input type="text" id="profesional" placeholder="Ej: Pepe"><br><br>
+
+<div id="bloques-container"></div>
+
+<button type="button" onclick="agregarBloque()">+ Agregar bloque</button>
+<button type="button" onclick="enviarTurnos()">Enviar turnos</button>
+
+<h2>Resumen Editable</h2>
+<table id="resumen">
+  <thead>
+    <tr><th>Profesional</th><th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<p id="mensaje"></p>
+
+<script>
+// URL del Web App de Apps Script (poné la tuya)
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzPJY_dItLm_tYC4ynyN9iXzQdYe2yx4viPSbdIH_PwhT5yyFHfdbazwJHvIBd7Mf_iEA/exec";
+
+function agregarBloque() {
+  const container = document.getElementById("bloques-container");
+  const div = document.createElement("div");
+  div.className = "bloque";
+
+  const select = document.createElement("select");
+  select.className = "dia";
+  ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].forEach(d=>{
+    const option = document.createElement("option");
+    option.value = d;
+    option.textContent = d;
+    select.appendChild(option);
+  });
+
+  const inicio = document.createElement("input");
+  inicio.type = "time";
+  inicio.className = "inicio";
+
+  const fin = document.createElement("input");
+  fin.type = "time";
+  fin.className = "fin";
+
+  const btnQuitar = document.createElement("button");
+  btnQuitar.type = "button";
+  btnQuitar.textContent = "Quitar";
+  btnQuitar.onclick = () => { div.remove(); actualizarResumen(); };
+
+  [select, inicio, fin].forEach(el => el.onchange = actualizarResumen);
+
+  div.appendChild(select);
+  div.appendChild(inicio);
+  div.appendChild(fin);
+  div.appendChild(btnQuitar);
+  container.appendChild(div);
+
+  actualizarResumen();
+}
+
+// Genera turnos de 30 min por bloque
+function generarTurnosDeBloque(profesional, dia, inicio, fin) {
+  const turnos = [];
+  const [hInicio, mInicio] = inicio.split(":").map(Number);
+  const [hFin, mFin] = fin.split(":").map(Number);
+  let start = hInicio*60 + mInicio;
+  const end = hFin*60 + mFin;
+  while(start <= end) {
+    const hora = `${Math.floor(start/60).toString().padStart(2,"0")}:${(start%60).toString().padStart(2,"0")}`;
+    turnos.push({profesional, dia, hora, disponible: "Sí"});
+    start += 30;
+  }
+  return turnos;
+}
+
+// Actualiza tabla de resumen editable
+function actualizarResumen() {
+  const tbody = document.querySelector("#resumen tbody");
+  tbody.innerHTML = "";
+  const bloques = document.querySelectorAll(".bloque");
+  const datos = {};
+
+  bloques.forEach(div => {
+    const profesional = document.getElementById("profesional").value.trim() || "Sin nombre";
+    const dia = div.querySelector(".dia").value;
+    const inicio = div.querySelector(".inicio").value;
+    const fin = div.querySelector(".fin").value;
+    if(!inicio || !fin) return;
+
+    if(!datos[profesional]) datos[profesional] = {};
+    if(!datos[profesional][dia]) datos[profesional][dia] = [];
+    datos[profesional][dia].push({inicio, fin, div});
+  });
+
+  Object.keys(datos).forEach(prof => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${prof}</td>`;
+    ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].forEach(dia => {
+      const td = document.createElement("td");
+      (datos[prof][dia]||[]).forEach(b => {
+        const div = document.createElement("div");
+        const input = document.createElement("input");
+        input.value = `${b.inicio}-${b.fin}`;
+        input.onchange = () => {
+          const [newInicio,newFin] = input.value.split("-").map(s=>s.trim());
+          b.div.querySelector(".inicio").value = newInicio;
+          b.div.querySelector(".fin").value = newFin;
+          actualizarResumen();
+        };
+        const btn = document.createElement("button");
+        btn.type="button";
+        btn.textContent="Eliminar";
+        btn.onclick = ()=> { b.div.remove(); actualizarResumen(); };
+        div.appendChild(input);
+        div.appendChild(btn);
+        td.appendChild(div);
+      });
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+// Enviar turnos a Apps Script
+function enviarTurnos() {
+  const profesional = document.getElementById("profesional").value.trim();
+  if(!profesional) return alert("Ingresá el nombre del profesional");
+
+  const bloques = document.querySelectorAll(".bloque");
+  if(bloques.length===0) return alert("Agregá al menos un bloque");
+
+  let todosTurnos=[];
+  let horarios=[];
+
+  bloques.forEach(div=>{
+    const dia = div.querySelector(".dia").value;
+    const inicio = div.querySelector(".inicio").value;
+    const fin = div.querySelector(".fin").value;
+    if(!inicio||!fin) return;
+    horarios.push({dia,inicio,fin});
+    todosTurnos = todosTurnos.concat(generarTurnosDeBloque(profesional,dia,inicio,fin));
+  });
+
+  fetch(URL_APPS_SCRIPT, {
+    method: "POST",
+    body: JSON.stringify({profesional, horarios, turnos: todosTurnos}),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.status==="ok") {
+      document.getElementById("mensaje").innerText="✅ Turnos enviados correctamente!";
+    } else {
+      document.getElementById("mensaje").innerText="⚠️ Error: "+data.message;
+    }
+  })
+  .catch(err=>{
+    document.getElementById("mensaje").innerText="⚠️ Error al enviar: "+err;
+  });
+}
+
+// Inicializar con un bloque
+agregarBloque();
+</script>
 
 </body>
 </html>
