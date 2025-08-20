@@ -6,30 +6,27 @@
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; }
   input, select, button { margin: 5px 0; padding: 5px; }
-  .bloque { margin-bottom: 10px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+  .horario { margin-bottom: 10px; }
 </style>
 </head>
 <body>
 <h1>Agregar Horarios de Profesionales</h1>
 
 <label>Profesional:</label>
-<input type="text" id="profesional" placeholder="Ej: Pepe"><br><br>
+<input type="text" id="profesional" placeholder="Ej: Pepe"><br>
 
-<div id="bloques-container"></div>
+<div id="horarios-container"></div>
 
-<button type="button" onclick="agregarBloque()">+ Agregar bloque</button><br><br>
-<button type="button" onclick="enviarTurnos()">Enviar turnos</button>
-
-<p id="mensaje"></p>
+<button type="button" onclick="agregarHorario()">Agregar horario</button><br>
+<button type="button" onclick="enviarHorarios()">Enviar horarios</button>
 
 <script>
-const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxVaz5-QvYG5b9eSUrKOpMdQYDlKbnTJ6rfwmd9syaJLVAmpr5G6R2CFEob8YRpG9mC5g/exec"; // reemplazá con tu URL de Web App
+const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxVaz5-QvYG5b9eSUrKOpMdQYDlKbnTJ6rfwmd9syaJLVAmpr5G6R2CFEob8YRpG9mC5g/exec"; // reemplaza con tu URL web app
 
-// Agrega un bloque de horario
-function agregarBloque() {
-  const container = document.getElementById("bloques-container");
+function agregarHorario() {
+  const container = document.getElementById("horarios-container");
   const div = document.createElement("div");
-  div.className = "bloque";
+  div.className = "horario";
 
   const select = document.createElement("select");
   select.className = "dia";
@@ -40,13 +37,13 @@ function agregarBloque() {
     select.appendChild(option);
   });
 
-  const inicio = document.createElement("input");
-  inicio.type = "time";
-  inicio.className = "inicio";
+  const inputInicio = document.createElement("input");
+  inputInicio.type = "time";
+  inputInicio.className = "inicio";
 
-  const fin = document.createElement("input");
-  fin.type = "time";
-  fin.className = "fin";
+  const inputFin = document.createElement("input");
+  inputFin.type = "time";
+  inputFin.className = "fin";
 
   const btnQuitar = document.createElement("button");
   btnQuitar.type = "button";
@@ -54,81 +51,50 @@ function agregarBloque() {
   btnQuitar.onclick = () => div.remove();
 
   div.appendChild(select);
-  div.appendChild(inicio);
-  div.appendChild(fin);
+  div.appendChild(inputInicio);
+  div.appendChild(inputFin);
   div.appendChild(btnQuitar);
+
   container.appendChild(div);
 }
 
-// Genera los turnos de 30 min para un bloque
-function generarTurnosDeBloque(profesional, dia, inicio, fin) {
-  const turnos = [];
-  const [hInicio, mInicio] = inicio.split(":").map(Number);
-  const [hFin, mFin] = fin.split(":").map(Number);
-
-  let start = hInicio * 60 + mInicio;
-  const end = hFin * 60 + mFin;
-
-  while(start <= end) {
-    const hora = `${Math.floor(start/60).toString().padStart(2,"0")}:${(start%60).toString().padStart(2,"0")}`;
-    turnos.push({profesional, dia, hora, disponible: "Sí"});
-    start += 30;
-  }
-  return turnos;
-}
-
-// Enviar todos los bloques y turnos al Apps Script
-async function enviarTurnos() {
+function enviarHorarios() {
   const profesional = document.getElementById("profesional").value.trim();
-  if(!profesional) return alert("Ingresá el nombre del profesional");
+  if(!profesional) return alert("Ingresa el nombre del profesional");
 
-  const bloques = document.querySelectorAll(".bloque");
-  if(bloques.length === 0) return alert("Agregá al menos un bloque");
-
-  let todosTurnos = [];
-  let horarios = [];
-
-  bloques.forEach(div => {
+  const horariosDivs = document.querySelectorAll("#horarios-container .horario");
+  const horarios = [];
+  horariosDivs.forEach(div => {
     const dia = div.querySelector(".dia").value;
     const inicio = div.querySelector(".inicio").value;
     const fin = div.querySelector(".fin").value;
-    if(inicio && fin) {
-      horarios.push({dia, inicio, fin});
-      todosTurnos = todosTurnos.concat(generarTurnosDeBloque(profesional, dia, inicio, fin));
-    }
+    if(inicio && fin) horarios.push(`${dia},${inicio},${fin}`);
   });
 
-  const payload = {profesional, horarios, turnos: todosTurnos};
-  
-  console.log("Payload a enviar:", payload); // 🔹 Log del JSON que vamos a enviar
+  if(horarios.length === 0) return alert("Agrega al menos un horario");
 
-  try {
-    const res = await fetch(URL_APPS_SCRIPT, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
+  const formData = new URLSearchParams();
+  formData.append("profesional", profesional);
+  horarios.forEach(h => formData.append("horarios", h));
 
-    console.log("Respuesta fetch raw:", res); // 🔹 Log de la respuesta cruda
-
-    const data = await res.json();
-    console.log("Respuesta JSON:", data); // 🔹 Log del JSON parseado
-
+  fetch(URL_APPS_SCRIPT, {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
     if(data.status === "ok") {
-      document.getElementById("mensaje").innerText = "✅ Turnos enviados correctamente!";
-      document.getElementById("bloques-container").innerHTML = "";
+      alert("Horarios enviados correctamente!");
+      // Limpiar formulario si querés
+      document.getElementById("horarios-container").innerHTML = "";
       document.getElementById("profesional").value = "";
-    } else {
-      document.getElementById("mensaje").innerText = "⚠️ Error: " + data.message;
-    }
-  } catch(err) {
-    console.error("Error catch fetch:", err); // 🔹 Log del error real
-    document.getElementById("mensaje").innerText = "❌ Error al enviar: " + err;
-  }
+    } else alert("Error: " + data.message);
+  })
+  .catch(err => alert("Error al enviar: " + err));
 }
 
-// Agrega un bloque por defecto al cargar la página
-agregarBloque();
+// Agregar un horario por defecto al cargar la página
+agregarHorario();
 </script>
 </body>
 </html>
