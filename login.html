@@ -78,10 +78,12 @@
           msg.style.color = "green";
           msg.textContent = `✅ Bienvenido ${data.username}, redirigiendo...`;
 
-          // redirigir a la página pública del usuario
-          setTimeout(() => {
-            window.location.href = `/${data.username}`;
-          }, 1000);
+          // redirigir al panel privado después del login
+localStorage.setItem("user", JSON.stringify({
+  userId: data.userId,
+  username: data.username
+}));
+window.location.href = "/panel.html";
 
         } else {
           msg.style.color = "red";
